@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Ethiopian Cuisine - Gursha Guide</title>
+  <meta name="description" content="Learn about the rich history, unique traditions, and cultural significance of Ethiopian cuisine.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="/src/css/style.css">
+  <style>
+    .timeline {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+
+    .timeline::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      background-color: var(--primary-color);
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      margin-left: -3px;
+    }
+
+    .timeline-item {
+      padding: 10px 40px;
+      position: relative;
+      width: 50%;
+      box-sizing: border-box;
+    }
+
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      right: -12px;
+      background-color: var(--accent-color-2);
+      border: 4px solid var(--primary-color);
+      top: 15px;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .timeline-left {
+      left: 0;
+    }
+
+    .timeline-right {
+      left: 50%;
+    }
+
+    .timeline-right::after {
+      left: -12px;
+    }
+
+    .timeline-content {
+      padding: 20px 25px;
+      background-color: var(--background-light);
+      position: relative;
+      border-radius: 6px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      color: var(--text-dark);
+    }
+
+    [data-theme="dark"] .timeline-content {
+      background-color: var(--background-warm);
+      color: var(--text-light);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .timeline-year {
+      position: absolute;
+      color: white;
+      background-color: var(--primary-color);
+      padding: 5px 15px;
+      border-radius: 20px;
+      top: -15px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .spice-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .spice-card {
+      background-color: var(--background-light);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      color: var(--text-dark);
+    }
+
+    [data-theme="dark"] .spice-card {
+      background-color: var(--background-warm);
+      color: var(--text-light);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .spice-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .spice-img {
+      height: 180px;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .spice-content {
+      padding: 1.5rem;
+    }
+
+    .spice-title {
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    @media screen and (max-width: 768px) {
+      .timeline::after {
+        left: 31px;
+      }
+
+      .timeline-item {
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 25px;
+      }
+
+      .timeline-right {
+        left: 0;
+      }
+
+      .timeline-left::after, .timeline-right::after {
+        left: 19px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="logo">Gursha Guide</a>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="recipes.html">Recipes</a></li>
+          <li><a href="about.html" class="active">About Ethiopian Cuisine</a></li>
+          <li><a href="subscription.html">Subscription</a></li>
+        </ul>
+        <ul class="nav-links auth-nav">
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Toggle dark mode">
+            <span class="dark-mode-icon">🌙</span>
+          </button></li>
+        </ul>
+        <div class="menu-toggle">☰</div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" style="min-height: 50vh; background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/about-hero.jpg');">
+    <div class="hero-content">
+      <h1>About Ethiopian Cuisine</h1>
+      <p>Discover the rich history, flavors, and traditions of one of the world's most unique food cultures</p>
+    </div>
+  </section>
+
+  <!-- Introduction Section -->
+  <section style="padding: 5rem 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>The Essence of Ethiopian Food</h2>
+        <p>A culinary tradition dating back thousands of years</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+        <div>
+          <p>Ethiopian cuisine is one of the world's most distinctive and flavorful culinary traditions, characterized by rich stews (wats), sourdough flatbread (injera), and complex spice blends. What makes it particularly special is not just the food itself, but the communal way it is shared and the cultural significance behind each dish.</p>
+          <p>In Ethiopian dining culture, meals are a social experience where people gather around a large shared platter, using pieces of injera to scoop up various dishes. This communal style of eating, where diners feed each other in a tradition known as "gursha," symbolizes the bonds of loyalty and friendship.</p>
+          <p>The cuisine reflects Ethiopia's diverse landscape and history, with influences from trade across the Red Sea and along historic routes. Despite these external influences, Ethiopian cuisine has maintained its unique identity throughout the centuries, making it one of the few world cuisines that remains truly distinctive.</p>
+        </div>
+        <div>
+          <img src="/images/traditional-meal.jpg" alt="Traditional Ethiopian meal" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);">
+          <p style="font-style: italic; margin-top: 0.5rem; text-align: center;">A traditional Ethiopian meal served on injera, featuring various wats (stews) and vegetable dishes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Historical Timeline -->
+  <section style="padding: 5rem 0; background-color: var(--background-accent);">
+    <div class="container">
+      <div class="section-title">
+        <h2>The History of Ethiopian Cuisine</h2>
+        <p>A journey through time exploring the evolution of Ethiopia's culinary traditions</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item timeline-left">
+          <div class="timeline-content">
+            <div class="timeline-year">3rd Century</div>
+            <h3>The Kingdom of Aksum</h3>
+            <p>The ancient Aksumite kingdom established crucial trade routes with the Middle East, India, and the Mediterranean, introducing new ingredients like spices, which would become fundamental to Ethiopian cuisine.</p>
+          </div>
+        </div>
+        <div class="timeline-item timeline-right">
+          <div class="timeline-content">
+            <div class="timeline-year">4th Century</div>
+            <h3>Introduction of Christianity</h3>
+            <p>Ethiopia's adoption of Christianity established fasting traditions that prohibit animal products for over 200 days a year, leading to the development of an extensive repertoire of vegan and vegetarian dishes.</p>
+          </div>
+        </div>
+        <div class="timeline-item timeline-left">
+          <div class="timeline-content">
+            <div class="timeline-year">7th Century</div>
+            <h3>The Origin of Coffee</h3>
+            <p>Coffee was discovered in the region of Kaffa in southwest Ethiopia. According to legend, a goat herder named Kaldi noticed his goats becoming energetic after eating certain berries, leading to the discovery of coffee.</p>
+          </div>
+        </div>
+        <div class="timeline-item timeline-right">
+          <div class="timeline-content">
+            <div class="timeline-year">13th-16th Century</div>
+            <h3>Development of Berbere</h3>
+            <p>During this period, Ethiopia's signature spice blend berbere was refined as trade brought various spices to the region. This complex mixture of chilis, fenugreek, ginger, and other spices became central to Ethiopian cooking.</p>
+          </div>
+        </div>
+        <div class="timeline-item timeline-left">
+          <div class="timeline-content">
+            <div class="timeline-year">16th Century</div>
+            <h3>Portuguese Influence</h3>
+            <p>Portuguese missionaries introduced chili peppers from the Americas, which were incorporated into berbere spice and transformed Ethiopian cuisine, adding the characteristic heat that is now associated with many Ethiopian dishes.</p>
+          </div>
+        </div>
+        <div class="timeline-item timeline-right">
+          <div class="timeline-content">
+            <div class="timeline-year">19th Century</div>
+            <h3>Codification of Royal Cuisine</h3>
+            <p>During Emperor Menelik II's reign, court chefs codified many of the dishes now considered pillars of Ethiopian cuisine, including doro wat (chicken stew), which became associated with celebration and hospitality.</p>
+          </div>
+        </div>
+        <div class="timeline-item timeline-left">
+          <div class="timeline-content">
+            <div class="timeline-year">20th Century</div>
+            <h3>Global Diaspora</h3>
+            <p>Political upheaval in the 1970s and 1980s led to Ethiopian emigration, spreading the cuisine globally. Ethiopian restaurants became cultural anchors for diaspora communities and introduced the cuisine to international audiences.</p>
+          </div>
+        </div>
+        <div class="timeline-item timeline-right">
+          <div class="timeline-content">
+            <div class="timeline-year">21st Century</div>
+            <h3>International Recognition</h3>
+            <p>Ethiopian cuisine gains growing recognition worldwide for its unique flavors, health benefits, and accommodations for various dietary preferences, including vegetarian, vegan, and gluten-free options.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Components Section -->
+  <section style="padding: 5rem 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Key Components of Ethiopian Cuisine</h2>
+        <p>The fundamental elements that define Ethiopia's culinary identity</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+        <div style="text-align: center;">
+          <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.5rem; border: 5px solid var(--primary-color);">
+            <img src="/images/injera.jpg" alt="Injera" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <h3>Injera</h3>
+          <p>A sourdough flatbread with a unique, slightly spongy texture, made from teff flour. Injera serves as both plate and utensil in Ethiopian dining, with various dishes placed directly on top of it.</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.5rem; border: 5px solid var(--primary-color);">
+            <img src="/images/berbere.jpg" alt="Berbere" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <h3>Berbere</h3>
+          <p>A complex, aromatic spice blend that forms the backbone of many Ethiopian dishes. Berbere typically includes chili peppers, fenugreek, ginger, garlic, cardamom, cinnamon, and other spices.</p>
+        </div>
+        <div style="text-align: center;">
+          <div style="width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 0 auto 1.5rem; border: 5px solid var(--primary-color);">
+            <img src="/images/niter-kibbeh.jpg" alt="Niter Kibbeh" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <h3>Niter Kibbeh</h3>
+          <p>A clarified butter infused with herbs and spices like cardamom, cinnamon, and fenugreek. This aromatic cooking fat adds depth and complexity to stews and other dishes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Spices Section -->
+  <section style="padding: 5rem 0; background-color: var(--background-accent);">
+    <div class="container">
+      <div class="section-title">
+        <h2>The Spices of Ethiopia</h2>
+        <p>Exploring the aromatic building blocks of Ethiopian flavor profiles</p>
+      </div>
+      <div class="spice-container">
+        <div class="spice-card">
+          <img src="/images/fenugreek.jpg" alt="Fenugreek" class="spice-img">
+          <div class="spice-content">
+            <h3 class="spice-title">Fenugreek (Abish)</h3>
+            <p>A key component in berbere and mitmita spice blends, fenugreek provides a slightly bitter, maple-like flavor that is essential to authentic Ethiopian cuisine.</p>
+          </div>
+        </div>
+        <div class="spice-card">
+          <img src="/images/korarima.jpg" alt="Ethiopian Cardamom" class="spice-img">
+          <div class="spice-content">
+            <h3 class="spice-title">Ethiopian Cardamom (Korarima)</h3>
+            <p>Different from Indian cardamom, this indigenous spice has a more complex, floral flavor with hints of citrus, and is used in berbere, niter kibbeh, and coffee ceremonies.</p>
+          </div>
+        </div>
+        <div class="spice-card">
+          <img src="/images/ajwain.jpg" alt="Ajwain" class="spice-img">
+          <div class="spice-content">
+            <h3 class="spice-title">Bishop's Weed (Ajwain)</h3>
+            <p>This thyme-like spice with a strong, pungent flavor is used in stews and lentil dishes, and is also valued for its digestive properties.</p>
+          </div>
+        </div>
+        <div class="spice-card">
+          <img src="/images/rue.jpg" alt="Ethiopian Rue" class="spice-img">
+          <div class="spice-content">
+            <h3 class="spice-title">Ethiopian Rue (Tenadam)</h3>
+            <p>With a unique flavor somewhere between mint and citrus, rue is used in vegetable dishes and teas, and is also used medicinally.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dining Culture Section -->
+  <section style="padding: 5rem 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Ethiopian Dining Culture</h2>
+        <p>More than just food—a social experience built on sharing and connection</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-top: 3rem;">
+        <div>
+          <h3><i class="fas fa-hands" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Gursha: The Art of Feeding</h3>
+          <p>In Ethiopian dining culture, feeding others with your hands—called "gursha"—is a gesture of hospitality and bonding. The host or an honored guest will roll up a piece of injera with some stew and place it directly into another diner's mouth. The larger the gursha, the greater the honor being shown.</p>
+        </div>
+        <div>
+          <h3><i class="fas fa-utensils" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Communal Dining</h3>
+          <p>Ethiopian meals are traditionally served on a large communal platter covered with injera. Various stews and dishes are arranged on the injera, and diners sit around the messob (a colorful woven table). Using only the right hand, diners tear pieces of injera to scoop up the food, fostering a sense of unity and shared experience.</p>
+        </div>
+        <div>
+          <h3><i class="fas fa-coffee" style="color: var(--primary-color); margin-right: 0.5rem;"></i> The Coffee Ceremony</h3>
+          <p>The Ethiopian coffee ceremony is a ritual of hospitality that can last for hours. The process includes roasting green coffee beans, grinding them by hand, brewing the coffee in a jebena (clay pot), and serving it in small cups. The ceremony typically includes three rounds of coffee and is accompanied by burning incense and a snack like popcorn.</p>
+        </div>
+      </div>
+      <div style="margin-top: 3rem; padding: 2rem; background-color: var(--background-accent); border-radius: 8px; text-align: center;">
+        <h3>Experience Ethiopian Dining Firsthand</h3>
+        <p>The best way to understand Ethiopian cuisine is to experience it yourself. Browse our authentic recipes and start cooking traditional Ethiopian dishes at home.</p>
+        <a href="recipes.html" class="btn btn-primary" style="margin-top: 1rem;">Explore Ethiopian Recipes</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fasting Traditions Section -->
+  <section style="padding: 5rem 0; background-color: var(--background-accent);">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+        <div>
+          <h2>Fasting Traditions and Vegetarian Cuisine</h2>
+          <p>The Ethiopian Orthodox Church prescribes fasting periods (tsom) for over 200 days a year, during which observers abstain from all animal products. This religious tradition has led to the development of a rich vegetarian and vegan culinary repertoire that is unlike any other in the world.</p>
+          <p>During fasting periods, Ethiopian cuisine focuses on dishes known as "ye-tsom megib" (fasting food), which includes a variety of lentil, split pea, and vegetable stews seasoned with aromatic spices. These dishes are not considered substitutes or lesser alternatives but are celebrated for their complex flavors and nutritional value.</p>
+          <p>Popular fasting dishes include misir wat (spiced red lentil stew), kik alicha (yellow split pea stew), gomen (collard greens), and shiro (ground chickpea stew). These dishes are so delicious and satisfying that they're enjoyed even outside of fasting periods and have made Ethiopian cuisine particularly popular among vegetarians and vegans worldwide.</p>
+          <div style="margin-top: 1.5rem;">
+            <a href="recipes.html?category=vegetarian" class="btn btn-secondary">Explore Vegetarian Ethiopian Recipes</a>
+          </div>
+        </div>
+        <div>
+          <img src="/images/vegetarian-platter.jpg" alt="Ethiopian Vegetarian Platter" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);">
+          <p style="font-style: italic; margin-top: 0.5rem; text-align: center;">A colorful ye-tsom beyaynetu (fasting platter) with various vegetarian dishes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>Gursha Guide</h3>
+          <p>Your guide to authentic Ethiopian cuisine, helping you explore the rich flavors and traditions of one of the world's most unique food cultures.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="recipes.html">Recipes</a></li>
+            <li><a href="about.html">About Ethiopian Cuisine</a></li>
+            <li><a href="subscription.html">Subscription Plans</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Recipe Categories</h3>
+          <ul class="footer-links">
+            <li><a href="recipes.html?category=main">Main Dishes</a></li>
+            <li><a href="recipes.html?category=vegetarian">Vegetarian</a></li>
+            <li><a href="recipes.html?category=bread">Breads</a></li>
+            <li><a href="recipes.html?category=beverage">Beverages</a></li>
+            <li><a href="recipes.html?category=condiment">Spices & Condiments</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Newsletter</h3>
+          <p>Subscribe to our newsletter for the latest recipes and Ethiopian cooking tips.</p>
+          <form class="newsletter-form" style="margin-top: 1rem;">
+            <input type="email" placeholder="Your email address" style="width: 100%; padding: 0.75rem; border-radius: 4px; border: none; margin-bottom: 0.5rem;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2023 Gursha Guide. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+
+</html>

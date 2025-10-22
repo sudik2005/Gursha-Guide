@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gursha Guide - Ethiopian Cuisine & Recipes</title>
+  <meta name="description" content="Discover authentic Ethiopian recipes and culinary traditions with Gursha Guide. From traditional injera to flavorful stews, explore the rich flavors of Ethiopia.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="/src/css/style.css">
+</head>
+
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="logo">Gursha Guide</a>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="recipes.html">Recipes</a></li>
+          <li><a href="about.html">About Ethiopian Cuisine</a></li>
+          <li><a href="subscription.html">Subscription</a></li>
+        </ul>
+        <ul class="nav-links auth-nav">
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Toggle dark mode">
+            <span class="dark-mode-icon">🌙</span>
+          </button></li>
+        </ul>
+        <div class="menu-toggle">☰</div>
+      </nav>
+    </div>
+  </header>
+
+    <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Experience Authentic Ethiopian Cuisine</h1>
+      <p>Discover the rich flavors, unique traditions, and cultural significance of Ethiopian cooking with Gursha Guide.</p>
+      <a href="recipes.html" class="btn btn-primary">Explore Recipes</a>
+      <a href="about.html" class="btn btn-secondary">Learn About Ethiopian Food</a>
+    </div>
+    <!-- Hero Background Images -->
+    <div class="hero-images">
+      <img src="/Image/Ethiopian-coffee-ceremony.png" alt="Ethiopian Coffee Ceremony" class="hero-bg-image">
+      <img src="/images/ethiopian-spices.jpg" alt="Ethiopian Spices" class="hero-bg-image">
+    </div>
+    <!-- Right edge blur -->
+    <div class="edge-blur-right"></div>
+  </section>
+
+  <!-- Featured Recipes Section -->
+  <section class="featured-section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Featured Ethiopian Recipes</h2>
+        <p>Explore some of our most popular traditional Ethiopian dishes</p>
+      </div>
+      <div class="card-grid">
+        <div class="card recipe-card" data-category="main" data-recipe-id="1">
+          <img src="/images/ethiopian-kitchen.jpg" alt="Ethiopian Kitchen" class="card-img">
+          <div class="card-content">
+            <h3 class="card-title">Doro Wat (Ethiopian Chicken Stew)</h3>
+            <p class="card-text">A spicy Ethiopian chicken stew with berbere spice and hard-boiled eggs.</p>
+            <a href="#" class="btn btn-primary" onclick="loadRecipeDetail(1); return false;">View Recipe</a>
+          </div>
+        </div>
+        <div class="card recipe-card" data-category="bread" data-recipe-id="2">
+          <img src="/images/berbere-spice-mix.jpg" alt="Berbere Spice Mix" class="card-img">
+          <div class="card-content">
+            <h3 class="card-title">Injera (Ethiopian Sourdough Flatbread)</h3>
+            <p class="card-text">The traditional Ethiopian sourdough flatbread that serves as both plate and utensil.</p>
+            <a href="#" class="btn btn-primary" onclick="loadRecipeDetail(2); return false;">View Recipe</a>
+          </div>
+        </div>
+        <div class="card recipe-card" data-category="vegetarian" data-recipe-id="3">
+          <img src="/images/traditional-cooking.jpg" alt="Traditional Cooking" class="card-img">
+          <div class="card-content">
+            <h3 class="card-title">Misir Wat (Ethiopian Red Lentil Stew)</h3>
+            <p class="card-text">A hearty and flavorful vegan Ethiopian lentil stew.</p>
+            <a href="#" class="btn btn-primary" onclick="loadRecipeDetail(3); return false;">View Recipe</a>
+          </div>
+        </div>
+      </div>
+      <div class="view-all-container" style="text-align: center; margin-top: 2rem;">
+        <a href="recipes.html" class="btn btn-secondary">View All Recipes</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Ethiopian Cuisine Section -->
+  <section class="about-section" style="background-color: var(--background-accent); padding: 5rem 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>About Ethiopian Cuisine</h2>
+        <p>A culinary tradition steeped in history and culture</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+        <div>
+          <h3>A Unique Dining Experience</h3>
+          <p>Ethiopian cuisine is characterized by communal eating from a single plate, using injera (sourdough flatbread) as both plate and utensil. The tradition known as "gursha" involves feeding others with your hands as a gesture of love and hospitality.</p>
+          <button class="info-toggle" style="background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; padding: 0.5rem 0;">Learn More</button>
+          <div class="info-content" style="display: none; margin-top: 1rem;">
+            <p>In Ethiopian dining culture, the host traditionally places a morsel of food into the guest's mouth, a practice called "gursha" that represents bonding and friendship. The larger the gursha, the greater the friendship being honored.</p>
+          </div>
+        </div>
+        <div>
+          <h3>Rich in Flavor and Nutrition</h3>
+          <p>Ethiopian food features complex spice blends, such as berbere, and a balance of proteins, legumes, and vegetables. Many dishes are naturally gluten-free, and the cuisine offers abundant vegetarian and vegan options that have been part of the culture for centuries.</p>
+          <button class="info-toggle" style="background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; padding: 0.5rem 0;">Learn More</button>
+          <div class="info-content" style="display: none; margin-top: 1rem;">
+            <p>The Ethiopian Orthodox Church prescribes numerous fasting days where no animal products are consumed, leading to a rich tradition of plant-based cooking. As a result, Ethiopian cuisine has some of the most sophisticated vegetarian and vegan dishes in the world.</p>
+          </div>
+        </div>
+        <div>
+          <h3>The Birthplace of Coffee</h3>
+          <p>Ethiopia is widely recognized as the birthplace of coffee, and the traditional coffee ceremony is a crucial part of Ethiopian culture and hospitality. This elaborate ritual involves roasting, grinding, and brewing coffee beans in front of guests.</p>
+          <button class="info-toggle" style="background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; padding: 0.5rem 0;">Learn More</button>
+          <div class="info-content" style="display: none; margin-top: 1rem;">
+            <p>The Ethiopian coffee ceremony can last for hours and typically includes three rounds of coffee: "Abol" (the first round), "Tona" (the second round), and "Baraka" (the blessing). The ceremony is often accompanied by burning incense and served with a snack like popcorn.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Subscription Plans Section -->
+  <section class="subscription-section" style="padding: 5rem 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Join Our Culinary Journey</h2>
+        <p>Choose the subscription plan that's right for you</p>
+      </div>
+      <div class="plans-container">
+        <div class="plan-card plan-free">
+          <div class="plan-header">
+            <h3>Free</h3>
+            <div class="plan-price">Free</div>
+            <div class="plan-duration">Forever</div>
+          </div>
+          <div class="plan-features">
+            <ul class="feature-list">
+              <li>Access to basic Ethiopian recipes</li>
+              <li>Browse recipe categories</li>
+              <li>Save recipes to favorites</li>
+              <li>Community forum access</li>
+            </ul>
+          </div>
+          <div class="plan-footer">
+            <button class="btn btn-primary subscription-form" data-subscription-level="free">Start Free</button>
+          </div>
+        </div>
+        <div class="plan-card plan-gold">
+          <div class="plan-header">
+            <h3>Gold</h3>
+            <div class="plan-price">299 Birr</div>
+            <div class="plan-duration">per month</div>
+          </div>
+          <div class="plan-features">
+            <ul class="feature-list">
+              <li>All free features included</li>
+              <li>Access to premium recipes</li>
+              <li>Weekly new recipe content</li>
+              <li>Video walkthroughs for all recipes</li>
+              <li>Recipe modifications and variations</li>
+            </ul>
+          </div>
+          <div class="plan-footer">
+            <button class="btn btn-primary subscription-form" data-subscription-level="gold">Get Gold</button>
+          </div>
+        </div>
+        <div class="plan-card plan-platinum">
+          <div class="plan-header">
+            <h3>Platinum</h3>
+            <div class="plan-price">499 Birr</div>
+            <div class="plan-duration">per month</div>
+          </div>
+          <div class="plan-features">
+            <ul class="feature-list">
+              <li>All Gold features included</li>
+              <li>Downloadable Ethiopian cookbooks</li>
+              <li>Early access to new content</li>
+              <li>Interactive cooking sessions</li>
+              <li>Personalized recipe recommendations</li>
+              <li>1-on-1 chef consultations</li>
+            </ul>
+          </div>
+          <div class="plan-footer">
+            <button class="btn btn-primary subscription-form" data-subscription-level="platinum">Go Platinum</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-title">
+        <h2>What Our Members Say</h2>
+        <p>Hear from our community of Ethiopian food enthusiasts</p>
+      </div>
+      <div class="card-grid">
+        <div class="testimonial-card">
+          <img src="/images/testimonial-1.jpg" alt="Sarah M.">
+          <h4>Sarah M.</h4>
+          <p>"I never thought I could make authentic Ethiopian food at home, but Gursha Guide changed that! The step-by-step instructions and videos made it so easy to recreate these amazing flavors."</p>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <img src="/images/testimonial-2.jpg" alt="Michael T.">
+          <h4>Michael T.</h4>
+          <p>"As someone with Ethiopian heritage, I was skeptical about any recipe site, but Gursha Guide truly honors the authenticity of the cuisine while making it accessible. My grandmother would approve!"</p>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <img src="/images/testimonial-3.jpg" alt="Lisa K.">
+          <h4>Lisa K.</h4>
+          <p>"The Platinum subscription is worth every penny! The interactive cooking sessions have improved my skills tremendously, and I've learned so much about Ethiopian food culture along the way."</p>
+          <div class="stars">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star-half-alt"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>Gursha Guide</h3>
+          <p>Your guide to authentic Ethiopian cuisine, helping you explore the rich flavors and traditions of one of the world's most unique food cultures.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="recipes.html">Recipes</a></li>
+            <li><a href="about.html">About Ethiopian Cuisine</a></li>
+            <li><a href="subscription.html">Subscription Plans</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Recipe Categories</h3>
+          <ul class="footer-links">
+            <li><a href="recipes.html?category=main">Main Dishes</a></li>
+            <li><a href="recipes.html?category=vegetarian">Vegetarian</a></li>
+            <li><a href="recipes.html?category=bread">Breads</a></li>
+            <li><a href="recipes.html?category=beverage">Beverages</a></li>
+            <li><a href="recipes.html?category=condiment">Spices & Condiments</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Newsletter</h3>
+          <p>Subscribe to our newsletter for the latest recipes and Ethiopian cooking tips.</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Your email address">
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2023 Gursha Guide. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+
+</html>

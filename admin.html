@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Gursha Guide</title>
+  <meta name="description" content="Admin panel for managing Ethiopian recipes on Gursha Guide">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="/src/css/style.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .admin-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+    
+    .logout-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--accent-color-3);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .logout-btn:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    }
+    
+    .admin-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .admin-tab {
+      padding: 1rem 2rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+    
+    .admin-tab.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+    
+    .admin-content {
+      display: none;
+    }
+    
+    .admin-content.active {
+      display: block;
+    }
+    
+    .recipe-form {
+      background: var(--background-light);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow-medium);
+      margin-bottom: 2rem;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: var(--background-light);
+      color: var(--text-dark);
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+    }
+    
+    .ingredients-list,
+    .instructions-list {
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 100px;
+    }
+    
+    .ingredients-list li,
+    .instructions-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: var(--background-accent);
+      border-radius: 4px;
+      color: var(--text-dark);
+    }
+    
+    .add-item-btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    
+    .remove-item-btn {
+      background: var(--accent-color-3);
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .recipes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    
+    .recipe-card {
+      background: var(--background-light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-light);
+      transition: all 0.3s ease;
+    }
+    
+    .recipe-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-medium);
+    }
+    
+    .recipe-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .btn-edit {
+      background: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-delete {
+      background: var(--accent-color-3);
+      color: white;
+    }
+    
+    .subscription-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .badge-free {
+      background: var(--accent-color);
+      color: white;
+    }
+    
+    .badge-gold {
+      background: var(--accent-color-2);
+      color: var(--text-dark);
+    }
+    
+    .badge-platinum {
+      background: var(--accent-color-3);
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="logo">Gursha Guide</a>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="recipes.html">Recipes</a></li>
+          <li><a href="about.html">About Ethiopian Cuisine</a></li>
+          <li><a href="subscription.html">Subscription</a></li>
+        </ul>
+        <ul class="nav-links auth-nav">
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Toggle dark mode">
+            <span class="dark-mode-icon">🌙</span>
+          </button></li>
+        </ul>
+        <div class="menu-toggle">☰</div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Admin Panel -->
+  <div class="admin-container">
+    <div class="admin-header">
+      <button class="logout-btn" id="adminLogout">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+      <h1>Recipe Management</h1>
+      <p>Add, edit, and manage Ethiopian recipes</p>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="add">Add New Recipe</button>
+      <button class="admin-tab" data-tab="manage">Manage Recipes</button>
+    </div>
+
+    <!-- Add Recipe Tab -->
+    <div class="admin-content active" id="add">
+      <form class="recipe-form" id="recipeForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="title">Recipe Title</label>
+            <input type="text" id="title" name="title" required>
+          </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="">Select Category</option>
+              <option value="main">Main Dishes</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="bread">Breads</option>
+              <option value="beverage">Beverages</option>
+              <option value="condiment">Spices & Condiments</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" rows="3" required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty" name="difficulty" required>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="subscriptionLevel">Subscription Level</label>
+            <select id="subscriptionLevel" name="subscriptionLevel" required>
+              <option value="free">Free</option>
+              <option value="gold">Gold</option>
+              <option value="platinum">Platinum</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="prepTime">Prep Time</label>
+            <input type="text" id="prepTime" name="prepTime" placeholder="e.g., 30 mins" required>
+          </div>
+          <div class="form-group">
+            <label for="cookTime">Cook Time</label>
+            <input type="text" id="cookTime" name="cookTime" placeholder="e.g., 1 hr" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="servings">Servings</label>
+          <input type="number" id="servings" name="servings" min="1" required>
+        </div>
+
+        <div class="form-group">
+          <label for="recipeImage">Recipe Image</label>
+          <input type="file" id="recipeImage" name="recipeImage" accept="image/*" onchange="previewImage(event)">
+          <div id="imagePreview" style="margin-top: 1rem; display: none;">
+            <img id="previewImg" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 2px solid var(--border-color);">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ingredients">Ingredients</label>
+          <ul class="ingredients-list" id="ingredientsList"></ul>
+          <button type="button" class="add-item-btn" onclick="addIngredient()">Add Ingredient</button>
+        </div>
+
+        <div class="form-group">
+          <label for="instructions">Instructions</label>
+          <ul class="instructions-list" id="instructionsList"></ul>
+          <button type="button" class="add-item-btn" onclick="addInstruction()">Add Instruction</button>
+        </div>
+
+        <div class="form-group">
+          <label for="tips">Tips (Optional)</label>
+          <ul class="ingredients-list" id="tipsList"></ul>
+          <button type="button" class="add-item-btn" onclick="addTip()">Add Tip</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Recipe</button>
+      </form>
+    </div>
+
+    <!-- Manage Recipes Tab -->
+    <div class="admin-content" id="manage">
+      <div class="recipes-grid" id="recipesGrid">
+        <!-- Recipes will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Cloudinary Script -->
+  <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+  
+  <!-- Admin Authentication -->
+  <script>
+    // Check admin authentication on page load
+    (function() {
+      const ADMIN_PASSWORD = 'admin123'; // Change this to your desired password
+      const SESSION_KEY = 'adminAuthenticated';
+      const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+      
+      // Check if already authenticated
+      const authData = sessionStorage.getItem(SESSION_KEY);
+      
+      if (authData) {
+        const { timestamp } = JSON.parse(authData);
+        const now = Date.now();
+        
+        // Check if session has expired
+        if (now - timestamp < SESSION_TIMEOUT) {
+          // Session is valid, update timestamp
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: now }));
+          return; // Allow access
+        } else {
+          // Session expired
+          sessionStorage.removeItem(SESSION_KEY);
+        }
+      }
+      
+      // Prompt for password
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      while (attempts < maxAttempts) {
+        const password = prompt('Enter admin password to access this page:');
+        
+        if (password === null) {
+          // User cancelled
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        if (password === ADMIN_PASSWORD) {
+          // Correct password - store authentication
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
+          return; // Allow access
+        }
+        
+        attempts++;
+        if (attempts < maxAttempts) {
+          alert(`Incorrect password. ${maxAttempts - attempts} attempt(s) remaining.`);
+        }
+      }
+      
+      // Max attempts reached
+      alert('Access denied. Too many failed attempts.');
+      window.location.href = 'index.html';
+    })();
+    
+    // Logout functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.getElementById('adminLogout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          if (confirm('Are you sure you want to logout?')) {
+            sessionStorage.removeItem('adminAuthenticated');
+            alert('Logged out successfully!');
+            window.location.href = 'index.html';
+          }
+        });
+      }
+    });
+  </script>
+  
+  <!-- Scripts -->
+  <script type="module" src="/src/js/admin.js"></script>
+</body>
+
+</html> 

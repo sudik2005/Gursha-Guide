@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe - Gursha Guide</title>
+  <meta name="description" content="Detailed recipe instructions for authentic Ethiopian dishes.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Our CSS -->
+  <link rel="stylesheet" href="/src/css/style.css">
+</head>
+
+<body>
+
+  <!-- Header Section -->
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="index.html" class="logo">Gursha Guide</a>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="recipes.html">Recipes</a></li>
+          <li><a href="about.html">About Ethiopian Cuisine</a></li>
+          <li><a href="subscription.html">Subscription</a></li>
+        </ul>
+        <ul class="nav-links auth-nav">
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Toggle dark mode">
+            <span class="dark-mode-icon">🌙</span>
+          </button></li>
+        </ul>
+        <div class="menu-toggle">☰</div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Recipe Detail Section -->
+  <section class="recipe-detail">
+    <!-- Recipe content will be dynamically inserted here by JavaScript -->
+    <div class="container">
+      <div class="loading-spinner" style="text-align: center; padding: 5rem 0;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color);"></i>
+        <p style="margin-top: 1rem;">Loading recipe details...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Recipes Section -->
+  <section class="related-recipes" style="padding: 4rem 0; background-color: var(--background-accent);">
+    <div class="container">
+      <div class="section-title">
+        <h2>You Might Also Like</h2>
+        <p>Explore more Ethiopian culinary delights</p>
+      </div>
+      <div class="card-grid">
+        <div class="card recipe-card" data-category="main" data-recipe-id="1">
+          <img src="/images/doro-wat.jpg" alt="Doro Wat" class="card-img">
+          <div class="card-content">
+            <h3 class="card-title">Doro Wat (Ethiopian Chicken Stew)</h3>
+            <p class="card-text">A spicy Ethiopian chicken stew with berbere spice and hard-boiled eggs.</p>
+            <a href="#" class="btn btn-primary" onclick="loadRecipeDetail(1); return false;">View Recipe</a>
+          </div>
+        </div>
+        <div class="card recipe-card" data-category="vegetarian" data-recipe-id="3">
+          <img src="/images/misir-wat.jpg" alt="Misir Wat" class="card-img">
+          <div class="card-content">
+            <h3 class="card-title">Misir Wat (Ethiopian Red Lentil Stew)</h3>
+            <p class="card-text">A hearty and flavorful vegan Ethiopian lentil stew.</p>
+            <a href="#" class="btn btn-primary" onclick="loadRecipeDetail(3); return false;">View Recipe</a>
+          </div>
+        </div>
+        <div class="card recipe-card" data-category="condiment" data-recipe-id="8">
+          <img src="/images/berbere.jpg" alt="Berbere Spice Mix" class="card-img">
+          <div class="card-content">
+            <h3 class="card-title">Berbere Spice Mix</h3>
+            <p class="card-text">The essential Ethiopian spice blend that forms the base of many dishes.</p>
+            <a href="#" class="btn btn-primary" onclick="loadRecipeDetail(8); return false;">View Recipe</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ethiopian Cuisine Context Section -->
+  <section class="cuisine-context" style="padding: 4rem 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>The Cultural Context</h2>
+        <p>Understanding the significance of Ethiopian food traditions</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+        <div>
+          <h3><i class="fas fa-utensils" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Communal Dining</h3>
+          <p>Ethiopian cuisine is traditionally served on a large shared platter called a "gebeta," with injera flatbread as both plate and utensil. Diners sit around the gebeta and use pieces of injera to scoop up the various stews and dishes.</p>
+        </div>
+        <div>
+          <h3><i class="fas fa-hands" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Gursha: The Art of Feeding</h3>
+          <p>In Ethiopian culture, feeding others with your hands—called "gursha"—is a gesture of hospitality and bonding. The size of the gursha often corresponds to the level of honor being shown to the recipient.</p>
+        </div>
+        <div>
+          <h3><i class="fas fa-seedling" style="color: var(--primary-color); margin-right: 0.5rem;"></i> Fasting Traditions</h3>
+          <p>Many Ethiopians observe Orthodox Christian fasting days, abstaining from animal products for over 200 days a year. This has led to a rich tradition of vegan cuisine that features prominently in Ethiopian cooking.</p>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="about.html" class="btn btn-secondary">Learn More About Ethiopian Food Culture</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>Gursha Guide</h3>
+          <p>Your guide to authentic Ethiopian cuisine, helping you explore the rich flavors and traditions of one of the world's most unique food cultures.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-pinterest"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="recipes.html">Recipes</a></li>
+            <li><a href="about.html">About Ethiopian Cuisine</a></li>
+            <li><a href="subscription.html">Subscription Plans</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Recipe Categories</h3>
+          <ul class="footer-links">
+            <li><a href="recipes.html?category=main">Main Dishes</a></li>
+            <li><a href="recipes.html?category=vegetarian">Vegetarian</a></li>
+            <li><a href="recipes.html?category=bread">Breads</a></li>
+            <li><a href="recipes.html?category=beverage">Beverages</a></li>
+            <li><a href="recipes.html?category=condiment">Spices & Condiments</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>Newsletter</h3>
+          <p>Subscribe to our newsletter for the latest recipes and Ethiopian cooking tips.</p>
+          <form class="newsletter-form" style="margin-top: 1rem;">
+            <input type="email" placeholder="Your email address" style="width: 100%; padding: 0.75rem; border-radius: 4px; border: none; margin-bottom: 0.5rem;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2023 Gursha Guide. All rights reserved. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+
+</html>
