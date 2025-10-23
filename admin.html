@@ -374,58 +374,65 @@
   <!-- Admin Authentication -->
   <script>
     // Check admin authentication on page load
-    (function() {
-      const ADMIN_PASSWORD = 'admin123'; // Change this to your desired password
-      const SESSION_KEY = 'adminAuthenticated';
-      const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
-      
-      // Check if already authenticated
-      const authData = sessionStorage.getItem(SESSION_KEY);
-      
-      if (authData) {
-        const { timestamp } = JSON.parse(authData);
-        const now = Date.now();
+    window.addEventListener('DOMContentLoaded', function() {
+      // Small delay to ensure page is fully loaded
+      setTimeout(function() {
+        const ADMIN_PASSWORD = 'admin123'; // Change this to your desired password
+        const SESSION_KEY = 'adminAuthenticated';
+        const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
         
-        // Check if session has expired
-        if (now - timestamp < SESSION_TIMEOUT) {
-          // Session is valid, update timestamp
-          sessionStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: now }));
-          return; // Allow access
-        } else {
-          // Session expired
-          sessionStorage.removeItem(SESSION_KEY);
-        }
-      }
-      
-      // Prompt for password
-      let attempts = 0;
-      const maxAttempts = 3;
-      
-      while (attempts < maxAttempts) {
-        const password = prompt('Enter admin password to access this page:');
+        // Check if already authenticated
+        const authData = sessionStorage.getItem(SESSION_KEY);
         
-        if (password === null) {
-          // User cancelled
-          window.location.href = 'index.html';
-          return;
+        if (authData) {
+          try {
+            const { timestamp } = JSON.parse(authData);
+            const now = Date.now();
+            
+            // Check if session has expired
+            if (now - timestamp < SESSION_TIMEOUT) {
+              // Session is valid, update timestamp
+              sessionStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: now }));
+              return; // Allow access
+            } else {
+              // Session expired
+              sessionStorage.removeItem(SESSION_KEY);
+            }
+          } catch (e) {
+            sessionStorage.removeItem(SESSION_KEY);
+          }
         }
         
-        if (password === ADMIN_PASSWORD) {
-          // Correct password - store authentication
-          sessionStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
-          return; // Allow access
+        // Prompt for password
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+          const password = prompt('Enter admin password to access this page:');
+          
+          if (password === null) {
+            // User cancelled
+            window.location.href = '/index.html';
+            return;
+          }
+          
+          if (password === ADMIN_PASSWORD) {
+            // Correct password - store authentication
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
+            return; // Allow access
+          }
+          
+          attempts++;
+          if (attempts < maxAttempts) {
+            alert(`Incorrect password. ${maxAttempts - attempts} attempt(s) remaining.`);
+          }
         }
         
-        attempts++;
-        if (attempts < maxAttempts) {
-          alert(`Incorrect password. ${maxAttempts - attempts} attempt(s) remaining.`);
-        }
-      }
-      
-      // Max attempts reached
-      alert('Access denied. Too many failed attempts.');
-      window.location.href = 'index.html';
-    })();
+        // Max attempts reached
+        alert('Access denied. Too many failed attempts.');
+        window.location.href = '/index.html';
+      }, 100);
+    });
     
     // Logout functionality
     document.addEventListener('DOMContentLoaded', () => {
