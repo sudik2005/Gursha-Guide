@@ -6,7 +6,7 @@ const VERIFY_CBE_URL = 'https://verify.leul.et/api/verify'; // CBE verification 
 const VERIFY_TELEBIRR_URL = 'https://verify.leul.et/api/verify'; // Telebirr verification endpoint
 
 // Account suffix for CBE verification (last 8 digits of your CBE account)
-const ACCOUNT_SUFFIX = '12345678'; // Replace with your actual CBE account suffix
+const ACCOUNT_SUFFIX = '01164292'; // Last 8 digits of CBE account: 1000601164292
 
 // Plan pricing configuration
 const planPricing = {
