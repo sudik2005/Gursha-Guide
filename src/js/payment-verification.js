@@ -1,4 +1,5 @@
 // Payment Verification System for Ethiopian Payments (Telebirr/CBE)
+import { authService } from '../../firebase-config.js';
 
 // verify.leul.et API Configuration
 const VERIFY_API_KEY = 'Y21oNjE2a2VhMDAxeG5vMGs3cjdwNHByai0xNzYxMzgxOTIyODcyLTNnZm80YjR4cDU1';
@@ -255,25 +256,29 @@ async function simulateVerification(formData) {
 }
 
 // Activate user subscription after successful verification
-function activateSubscription(formData) {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+async function activateSubscription(formData) {
+  const currentUser = authService.getCurrentUser();
   
-  if (currentUser && currentUser.email === formData.userEmail) {
-    // Update user subscription
-    currentUser.subscriptionLevel = formData.subscriptionLevel;
-    currentUser.subscriptionDate = new Date().toISOString();
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  if (!currentUser) {
+    console.error('No user logged in!');
+    alert('Please login first to activate subscription');
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  try {
+    // Update user subscription in Firestore
+    await authService.updateSubscription(currentUser.uid, formData.subscriptionLevel);
     
-    // Update users array
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const userIndex = users.findIndex(u => u.email === currentUser.email);
-    if (userIndex !== -1) {
-      users[userIndex].subscriptionLevel = formData.subscriptionLevel;
-      users[userIndex].subscriptionDate = new Date().toISOString();
-      localStorage.setItem('users', JSON.stringify(users));
+    // Update window.currentUser if it exists
+    if (window.currentUser) {
+      window.currentUser.subscriptionLevel = formData.subscriptionLevel;
     }
     
-    console.log('Subscription activated for:', formData.userEmail);
+    console.log('Subscription activated for:', currentUser.email);
+  } catch (error) {
+    console.error('Error activating subscription:', error);
+    throw error;
   }
 }
 
@@ -306,8 +311,8 @@ function sendVerificationEmail(formData, isVerified = false, apiResult = null) {
 }
 
 // Activate free plan
-function activateFreePlan() {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+async function activateFreePlan() {
+  const currentUser = authService.getCurrentUser();
   
   if (!currentUser) {
     alert('Please login first to activate the free plan');
@@ -315,20 +320,21 @@ function activateFreePlan() {
     return;
   }
   
-  // Update user subscription
-  currentUser.subscriptionLevel = 'free';
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
-  // Update users array
-  const users = JSON.parse(localStorage.getItem('users') || '[]');
-  const userIndex = users.findIndex(u => u.email === currentUser.email);
-  if (userIndex !== -1) {
-    users[userIndex].subscriptionLevel = 'free';
-    localStorage.setItem('users', JSON.stringify(users));
+  try {
+    // Update user subscription in Firestore
+    await authService.updateSubscription(currentUser.uid, 'free');
+    
+    // Update window.currentUser if it exists
+    if (window.currentUser) {
+      window.currentUser.subscriptionLevel = 'free';
+    }
+    
+    alert('Free plan activated successfully!');
+    window.location.reload();
+  } catch (error) {
+    console.error('Error activating free plan:', error);
+    alert('Failed to activate free plan. Please try again.');
   }
-  
-  alert('Free plan activated successfully!');
-  window.location.reload();
 }
 
 // Show message
