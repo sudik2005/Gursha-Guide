@@ -341,19 +341,34 @@
         <div class="form-group">
           <label for="ingredients">Ingredients</label>
           <ul class="ingredients-list" id="ingredientsList"></ul>
-          <button type="button" class="add-item-btn" onclick="addIngredient()">Add Ingredient</button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="add-item-btn" onclick="addIngredient()">Add Ingredient</button>
+            <button type="button" class="add-item-btn" onclick="toggleBulkPaste('ingredientsList')" style="background: var(--accent-color-2);">
+              <i class="fas fa-paste"></i> Bulk Paste
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="instructions">Instructions</label>
           <ul class="instructions-list" id="instructionsList"></ul>
-          <button type="button" class="add-item-btn" onclick="addInstruction()">Add Instruction</button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="add-item-btn" onclick="addInstruction()">Add Instruction</button>
+            <button type="button" class="add-item-btn" onclick="toggleBulkPaste('instructionsList')" style="background: var(--accent-color-2);">
+              <i class="fas fa-paste"></i> Bulk Paste
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="tips">Tips (Optional)</label>
           <ul class="ingredients-list" id="tipsList"></ul>
-          <button type="button" class="add-item-btn" onclick="addTip()">Add Tip</button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="button" class="add-item-btn" onclick="addTip()">Add Tip</button>
+            <button type="button" class="add-item-btn" onclick="toggleBulkPaste('tipsList')" style="background: var(--accent-color-2);">
+              <i class="fas fa-paste"></i> Bulk Paste
+            </button>
+          </div>
         </div>
 
         <button type="submit" class="btn btn-primary">Add Recipe</button>

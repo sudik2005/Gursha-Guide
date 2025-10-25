@@ -227,30 +227,31 @@ img {
 
 /* Enhanced Header */
 .header {
-  background-color: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-light);
+  background-color: transparent !important;
+  backdrop-filter: none;
+  box-shadow: none;
   position: sticky;
   top: 0;
   z-index: 1000;
   transition: all 0.3s ease;
 }
 
-/* Force dark mode header to be completely opaque */
+.header .container {
+  background: transparent !important;
+}
+
+/* Dark mode header and navbar - keep transparent */
 [data-theme="dark"] .header {
-  background-color: #2d2d2d !important;
+  background-color: transparent !important;
   backdrop-filter: none !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: none;
 }
 
-/* Dark mode navbar with hardcoded colors */
 [data-theme="dark"] .navbar {
-  background: #2d2d2d !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  background: transparent !important;
+  box-shadow: none !important;
   backdrop-filter: none !important;
 }
-
-/* Dark mode header - removed duplicate */
 
 /* Navbar Flex Alignment */
 .header {
@@ -259,44 +260,44 @@ img {
 
 .navbar {
   display: flex;
-  align-items: center;         /* Vertically center logo and nav */
+  align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
-  height: 56px;                /* Reduce navbar height */
+  padding: 0 1.5rem;
+  height: 56px;
   min-height: 0;
-  background: var(--background-light);            /* Optional: ensure background is set */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03); /* Optional: subtle shadow */
+  background: transparent !important;
+  box-shadow: none !important;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
-/* Dark mode navbar */
-[data-theme="dark"] .navbar {
-  background: var(--background-warm) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  backdrop-filter: none !important;
-}
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  color: var(--primary-color, #7c4d1e);
+  color: #000000;
   text-decoration: none;
   padding: 0;
   margin: 0;
   line-height: 1;
   display: flex;
   align-items: center;
-  height: 56px;                /* Match navbar height */
+  height: 56px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: none;
 }
 
 .nav-links,
 .auth-nav {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  height: 56px;                /* Match navbar height */
+  height: 56px;
+  flex-wrap: nowrap;
 }
 
 .nav-links li,
@@ -308,19 +309,23 @@ img {
 
 .nav-links a,
 .auth-nav a {
-  color: var(--text-dark);
+  color: #000000;
   text-decoration: none;
   font-weight: 500;
-  padding: 0 0.5rem;
+  padding: 0 0.4rem;
   height: 56px;
   display: flex;
   align-items: center;
-  transition: color 0.2s;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  text-shadow: none;
 }
 
 .nav-links a:hover,
 .auth-nav a:hover {
-  color: var(--primary-color, #7c4d1e);
+  color: var(--primary-color);
+  transform: translateY(-2px);
 }
 
 /* Menu toggle button (mobile) */
@@ -336,7 +341,7 @@ img {
 .dark-mode-btn {
   background: none;
   border: none;
-  color: var(--text-dark);
+  color: #000000;
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -347,10 +352,11 @@ img {
   justify-content: center;
   min-width: 40px;
   min-height: 40px;
+  filter: none;
 }
 
 .dark-mode-btn:hover {
-  background-color: var(--background-accent);
+  background-color: rgba(0, 0, 0, 0.1);
   transform: scale(1.1);
 }
 
@@ -404,10 +410,10 @@ img {
   position: absolute;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   opacity: 0;
   transition: opacity 0.5s ease;
-  filter: blur(0px);
+  filter: blur(4px);
   transform: scale(1.05);
 }
 
@@ -1012,11 +1018,44 @@ img {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .navbar {
+    height: 60px;
+    padding: 0 1rem;
+    flex-wrap: nowrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-size: 1.3rem;
+    height: 60px;
+    flex-shrink: 0;
+  }
+
+  .auth-nav {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    order: 3;
+  }
+
   .nav-links {
     position: fixed;
-    top: 100%;
+    top: 60px;
     left: 0;
     width: 100%;
+    height: auto;
     background: var(--background-light);
     flex-direction: column;
     padding: var(--spacing-lg);
@@ -1025,6 +1064,7 @@ img {
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+    z-index: 999;
   }
 
   .nav-links.active {
@@ -1035,10 +1075,19 @@ img {
 
   .nav-links li {
     margin: var(--spacing-sm) 0;
+    height: auto;
   }
 
-  .menu-toggle {
-    display: block;
+  .nav-links a {
+    height: auto;
+    padding: 0.75rem 0;
+  }
+
+  .hero {
+    min-height: 100vh;
+    padding: var(--spacing-xl) var(--spacing-md);
+    margin-top: -60px;
+    padding-top: calc(var(--spacing-xl) + 60px);
   }
 
   .hero h1 {
@@ -1047,6 +1096,11 @@ img {
 
   .hero p {
     font-size: 1.1rem;
+  }
+
+  .hero-bg-image {
+    object-position: center center;
+    transform: scale(1);
   }
 
   .card-grid {
@@ -1080,6 +1134,40 @@ img {
 @media (max-width: 480px) {
   .container {
     padding: 0 var(--spacing-sm);
+  }
+
+  .navbar {
+    padding: 0 0.75rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .hero {
+    min-height: 100vh;
+    padding: var(--spacing-lg) var(--spacing-sm);
+    margin-top: -60px;
+    padding-top: calc(var(--spacing-lg) + 60px);
+  }
+
+  .hero h1 {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .hero .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .hero-bg-image {
+    transform: scale(1);
   }
 
   .hero {
@@ -1198,6 +1286,28 @@ html {
   }
 }
 
+/* Medium screens - keep navbar compact */
+@media (max-width: 1100px) {
+  .navbar {
+    padding: 0 1rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .nav-links,
+  .auth-nav {
+    gap: 0.5rem;
+  }
+
+  .nav-links a,
+  .auth-nav a {
+    padding: 0 0.3rem;
+    font-size: 0.9rem;
+  }
+}
+
 @media (max-width: 900px) {
   .navbar {
     flex-direction: column;
@@ -1210,4 +1320,15 @@ html {
   .auth-nav li {
     max-width: 120px;
   }
+}
+
+/* CTA Card Hover Effects */
+.cta-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.cta-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-medium);
 }

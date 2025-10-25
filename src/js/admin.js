@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeForm();
   loadRecipes();
   initializeDarkMode();
+  initializePasteFormatting();
 });
 
 // Tab functionality
@@ -209,6 +210,8 @@ window.addInstruction = addInstruction;
 window.addTip = addTip;
 window.previewImage = previewImage;
 window.uploadImage = uploadImage;
+window.toggleBulkPaste = toggleBulkPaste;
+window.processBulkPaste = processBulkPaste;
 
 // Dark Mode Functionality
 function initializeDarkMode() {
@@ -381,6 +384,140 @@ function showMessage(message, type) {
     messageDiv.style.animation = 'slideOutRight 0.3s ease-out';
     setTimeout(() => messageDiv.remove(), 300);
   }, 3000);
+}
+
+// Initialize paste formatting
+function initializePasteFormatting() {
+  // Add paste event listeners to all list containers
+  const lists = ['ingredientsList', 'instructionsList', 'tipsList'];
+  
+  lists.forEach(listId => {
+    const list = document.getElementById(listId);
+    if (list) {
+      list.addEventListener('paste', (e) => handlePaste(e, listId));
+    }
+  });
+}
+
+// Handle paste event
+function handlePaste(e, listId) {
+  const pastedText = e.clipboardData.getData('text');
+  
+  // Check if it's multi-line content
+  if (pastedText.includes('\n')) {
+    e.preventDefault();
+    
+    // Split by newlines and clean up
+    const lines = pastedText
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+    
+    // Add each line as a list item
+    lines.forEach((line, index) => {
+      // Remove existing numbering if present
+      const cleanedLine = line.replace(/^\d+\.?\s*/, '');
+      
+      const list = document.getElementById(listId);
+      const li = document.createElement('li');
+      
+      li.innerHTML = `
+        <input type="text" value="${cleanedLine}" style="flex: 1; border: none; background: transparent; padding: 0.5rem; font-size: 1rem;">
+        <button type="button" class="remove-item-btn" onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      list.appendChild(li);
+    });
+    
+    showMessage(`Added ${lines.length} items`, 'success');
+  }
+}
+
+// Toggle bulk paste textarea
+function toggleBulkPaste(listId) {
+  const container = document.getElementById(listId).parentElement;
+  let textarea = container.querySelector('.bulk-paste-area');
+  
+  if (textarea) {
+    textarea.remove();
+    return;
+  }
+  
+  // Create textarea for bulk paste
+  textarea = document.createElement('textarea');
+  textarea.className = 'bulk-paste-area';
+  textarea.placeholder = 'Paste your items here (one per line)...';
+  textarea.style.cssText = `
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 2px dashed var(--accent-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    resize: vertical;
+  `;
+  
+  // Create process button
+  const processBtn = document.createElement('button');
+  processBtn.type = 'button';
+  processBtn.className = 'btn btn-primary';
+  processBtn.textContent = 'Process & Add Items';
+  processBtn.style.marginBottom = '1rem';
+  processBtn.onclick = () => processBulkPaste(listId);
+  
+  // Insert before the list
+  const list = document.getElementById(listId);
+  list.parentElement.insertBefore(textarea, list);
+  list.parentElement.insertBefore(processBtn, list);
+  
+  textarea.focus();
+}
+
+// Process bulk paste
+function processBulkPaste(listId) {
+  const container = document.getElementById(listId).parentElement;
+  const textarea = container.querySelector('.bulk-paste-area');
+  
+  if (!textarea) return;
+  
+  const text = textarea.value.trim();
+  if (!text) {
+    showMessage('Please paste some content first', 'error');
+    return;
+  }
+  
+  // Split by newlines and clean up
+  const lines = text
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
+  
+  // Add each line as a list item
+  const list = document.getElementById(listId);
+  lines.forEach((line) => {
+    // Remove existing numbering if present
+    const cleanedLine = line.replace(/^\d+\.?\s*/, '');
+    
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <input type="text" value="${cleanedLine}" style="flex: 1; border: none; background: transparent; padding: 0.5rem; font-size: 1rem;">
+      <button type="button" class="remove-item-btn" onclick="this.parentElement.remove()">
+        <i class="fas fa-times"></i>
+      </button>
+    `;
+    
+    list.appendChild(li);
+  });
+  
+  showMessage(`Added ${lines.length} items`, 'success');
+  
+  // Remove textarea and button
+  textarea.remove();
+  container.querySelector('.btn-primary').remove();
 }
 
 // Add CSS animations
