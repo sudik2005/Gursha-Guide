@@ -309,82 +309,58 @@ function initializeRecipeFiltering() {
   }
 }
 
-// Enhanced Subscription Handling
-// DISABLED: Now using payment verification system (payment-verification.js)
-// This old handler has been replaced with Ethiopian payment integration
-function initializeSubscriptionHandling() {
-  // Subscription handling is now done in payment-verification.js
-  // This function is kept for backwards compatibility but does nothing
-  return;
-  
-  /* OLD CODE COMMENTED OUT - DO NOT USE
+// Enhanced Subscription Handling with Firebase
+async function initializeSubscriptionHandling() {
+  // Firebase-based subscription handling
   const subscriptionForms = document.querySelectorAll('.subscription-form');
 
   if (subscriptionForms.length > 0) {
+    // Import Firebase auth service
+    let authService;
+    try {
+      const firebaseModule = await import('../../firebase-config.js');
+      authService = firebaseModule.authService;
+    } catch (error) {
+      console.error('Failed to load Firebase auth for subscriptions:', error);
+      return;
+    }
+
     subscriptionForms.forEach(form => {
       form.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        // Check if user is logged in
+        const currentUser = authService.getCurrentUser();
 
         if (!currentUser) {
-          // Show login prompt with animation
-          const loginPrompt = document.createElement('div');
-          loginPrompt.className = 'login-prompt';
-          loginPrompt.innerHTML = `
-            <div class="login-prompt-content">
-              <h3>Please login to subscribe</h3>
-              <p>You need to be logged in to access premium features.</p>
-              <div class="login-prompt-buttons">
-                <a href="login.html" class="btn btn-primary">Login</a>
-                <button class="btn btn-outline" onclick="this.parentElement.parentElement.parentElement.remove()">Cancel</button>
-              </div>
-            </div>
-          `;
-          loginPrompt.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: fadeIn 0.3s ease-out;
-          `;
-          document.body.appendChild(loginPrompt);
+          // Show login prompt
+          showLoginPrompt();
           return;
         }
 
         const subscriptionLevel = form.dataset.subscriptionLevel;
+        const price = form.dataset.price || '0';
 
         // Show loading state
         const originalText = form.textContent;
         form.textContent = 'Processing...';
         form.disabled = true;
 
-        // Simulate subscription process
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Update user subscription
-        currentUser.subscriptionLevel = subscriptionLevel;
-        currentUser.subscriptionDate = new Date().toISOString();
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-        // Update user in users array
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const userIndex = users.findIndex(user => user.id === currentUser.id);
-
-        if (userIndex !== -1) {
-          users[userIndex].subscriptionLevel = subscriptionLevel;
-          users[userIndex].subscriptionDate = new Date().toISOString();
-          localStorage.setItem('users', JSON.stringify(users));
+        try {
+          // For now, directly update subscription (later integrate Chapa payment)
+          await authService.updateSubscription(currentUser.uid, subscriptionLevel);
+          
+          // Show success message
+          showSubscriptionSuccess(subscriptionLevel);
+          
+          // Reload page to update UI
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } catch (error) {
+          console.error('Subscription error:', error);
+          alert('Failed to update subscription: ' + error.message);
         }
-
-        // Show success message with animation
-        showSubscriptionSuccess(subscriptionLevel);
 
         // Reset button
         form.textContent = originalText;
@@ -392,17 +368,45 @@ function initializeSubscriptionHandling() {
       });
     });
   }
-  */
+
+  function showLoginPrompt() {
+    const loginPrompt = document.createElement('div');
+    loginPrompt.className = 'login-prompt';
+    loginPrompt.innerHTML = `
+      <div class="login-prompt-content" style="background: white; padding: 2rem; border-radius: 10px; text-align: center; max-width: 400px;">
+        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Please Login to Subscribe</h3>
+        <p style="margin-bottom: 1.5rem;">You need to be logged in to access premium features.</p>
+        <div class="login-prompt-buttons">
+          <a href="login.html" class="btn" style="background: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 5px; text-decoration: none; display: inline-block; margin: 0.5rem;">Login / Sign Up</a>
+          <button class="btn btn-outline" onclick="this.parentElement.parentElement.parentElement.remove()" style="padding: 0.75rem 1.5rem; border-radius: 5px; border: 2px solid var(--primary-color); background: transparent; color: var(--primary-color); cursor: pointer; margin: 0.5rem;">Cancel</button>
+        </div>
+      </div>
+    `;
+    loginPrompt.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeIn 0.3s ease-out;
+    `;
+    document.body.appendChild(loginPrompt);
+  }
 
   function showSubscriptionSuccess(level) {
     const successMessage = document.createElement('div');
     successMessage.className = 'subscription-success';
     successMessage.innerHTML = `
-      <div class="subscription-success-content">
-        <i class="fas fa-check-circle"></i>
-        <h3>Subscription Successful!</h3>
-        <p>You have successfully subscribed to the ${level.charAt(0).toUpperCase() + level.slice(1)} plan.</p>
-        <button class="btn btn-primary" onclick="this.parentElement.parentElement.remove()">Continue</button>
+      <div class="subscription-success-content" style="background: white; padding: 2rem; border-radius: 10px; text-align: center; max-width: 400px;">
+        <i class="fas fa-check-circle" style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Subscription Successful!</h3>
+        <p style="margin-bottom: 1.5rem;">You have successfully subscribed to the ${level.charAt(0).toUpperCase() + level.slice(1)} plan.</p>
+        <button class="btn btn-primary" onclick="this.parentElement.parentElement.remove()" style="background: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 5px; border: none; cursor: pointer;">Continue</button>
       </div>
     `;
     successMessage.style.cssText = `
