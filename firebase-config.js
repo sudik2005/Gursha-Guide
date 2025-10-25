@@ -1,7 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, getDocs, onSnapshot, setDoc, getDoc } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -30,6 +31,93 @@ try {
 }
 
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Authentication service
+export const authService = {
+  // Register new user
+  async register(email, password, name) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Store additional user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        name: name,
+        email: email,
+        subscriptionLevel: 'free',
+        createdAt: new Date().toISOString()
+      });
+      
+      console.log('User registered successfully:', user.uid);
+      return user;
+    } catch (error) {
+      console.error('Error registering user:', error);
+      throw error;
+    }
+  },
+
+  // Login user
+  async login(email, password) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log('User logged in successfully:', userCredential.user.uid);
+      return userCredential.user;
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error;
+    }
+  },
+
+  // Logout user
+  async logout() {
+    try {
+      await signOut(auth);
+      console.log('User logged out successfully');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      throw error;
+    }
+  },
+
+  // Get current user
+  getCurrentUser() {
+    return auth.currentUser;
+  },
+
+  // Get user data from Firestore
+  async getUserData(uid) {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', uid));
+      if (userDoc.exists()) {
+        return { uid, ...userDoc.data() };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting user data:', error);
+      throw error;
+    }
+  },
+
+  // Listen for auth state changes
+  onAuthStateChange(callback) {
+    return onAuthStateChanged(auth, callback);
+  },
+
+  // Update user subscription
+  async updateSubscription(uid, subscriptionLevel) {
+    try {
+      await updateDoc(doc(db, 'users', uid), {
+        subscriptionLevel: subscriptionLevel,
+        subscriptionDate: new Date().toISOString()
+      });
+      console.log('Subscription updated successfully');
+    } catch (error) {
+      console.error('Error updating subscription:', error);
+      throw error;
+    }
+  }
+};
 
 // Recipe management functions
 export const recipeService = {

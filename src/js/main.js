@@ -88,14 +88,30 @@ function initializeMobileMenu() {
   }
 }
 
-// Enhanced Authentication with better UX
-function initializeAuthentication() {
+// Enhanced Authentication with Firebase
+async function initializeAuthentication() {
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
-  const authMessage = document.querySelector('.auth-message');
 
-  // Simulated user storage
-  const users = JSON.parse(localStorage.getItem('users')) || [];
+  // Import Firebase auth service
+  let authService;
+  try {
+    console.log('Loading Firebase auth service...');
+    const firebaseModule = await import('../../firebase-config.js');
+    console.log('Firebase module loaded:', firebaseModule);
+    authService = firebaseModule.authService;
+    console.log('Auth service:', authService);
+    
+    if (!authService) {
+      console.error('Auth service is undefined!');
+      alert('Firebase Authentication is not properly configured. Please check the console.');
+      return;
+    }
+  } catch (error) {
+    console.error('Failed to load Firebase auth:', error);
+    alert('Failed to load authentication system: ' + error.message);
+    return;
+  }
 
   // Enhanced login form submission
   if (loginForm) {
@@ -112,14 +128,11 @@ function initializeAuthentication() {
       const email = loginForm.querySelector('input[name="email"]').value;
       const password = loginForm.querySelector('input[name="password"]').value;
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const user = users.find(user => user.email === email && user.password === password);
-
-      if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        showAuthMessage('Login successful! Redirecting...', 'success');
+      try {
+        console.log('Attempting to login user:', email);
+        const user = await authService.login(email, password);
+        console.log('User logged in successfully:', user);
+        alert('Login successful! Redirecting...');
         
         // Add success animation
         loginForm.style.transform = 'scale(0.95)';
@@ -130,8 +143,23 @@ function initializeAuthentication() {
         setTimeout(() => {
           window.location.href = 'index.html';
         }, 1500);
-      } else {
-        showAuthMessage('Invalid email or password', 'error');
+      } catch (error) {
+        console.error('Login error:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        let errorMessage = 'Invalid email or password: ' + error.message;
+        if (error.code === 'auth/user-not-found') {
+          errorMessage = 'No account found with this email';
+        } else if (error.code === 'auth/wrong-password') {
+          errorMessage = 'Incorrect password';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'Invalid email address';
+        } else if (error.code === 'auth/invalid-credential') {
+          errorMessage = 'Invalid email or password';
+        }
+        
+        alert(errorMessage);
         loginForm.style.animation = 'shake 0.5s ease-in-out';
         setTimeout(() => {
           loginForm.style.animation = '';
@@ -160,79 +188,47 @@ function initializeAuthentication() {
       const email = registerForm.querySelector('input[name="email"]').value;
       const password = registerForm.querySelector('input[name="password"]').value;
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      try {
+        console.log('Attempting to register user:', email);
+        const user = await authService.register(email, password, name);
+        console.log('User registered successfully:', user);
+        alert('Registration successful! Redirecting...');
+        
+        // Add success animation
+        registerForm.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          registerForm.style.transform = 'scale(1)';
+        }, 150);
 
-      // Check if user already exists
-      if (users.some(user => user.email === email)) {
-        showAuthMessage('Email already registered', 'error');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
+      } catch (error) {
+        console.error('Registration error:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+        
+        let errorMessage = 'Registration failed: ' + error.message;
+        if (error.code === 'auth/email-already-in-use') {
+          errorMessage = 'Email already registered';
+        } else if (error.code === 'auth/weak-password') {
+          errorMessage = 'Password should be at least 6 characters';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'Invalid email address';
+        }
+        
+        alert(errorMessage);
         registerForm.style.animation = 'shake 0.5s ease-in-out';
         setTimeout(() => {
           registerForm.style.animation = '';
         }, 500);
-        
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        return;
       }
-
-      // Create new user
-      const newUser = {
-        id: Date.now().toString(),
-        name,
-        email,
-        password,
-        subscriptionLevel: 'free',
-        createdAt: new Date().toISOString()
-      };
-
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
-      localStorage.setItem('currentUser', JSON.stringify(newUser));
-
-      showAuthMessage('Registration successful! Redirecting...', 'success');
-      
-      // Add success animation
-      registerForm.style.transform = 'scale(0.95)';
-      setTimeout(() => {
-        registerForm.style.transform = 'scale(1)';
-      }, 150);
-
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 1500);
 
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
     });
   }
-
-  // Enhanced authentication message display
-  function showAuthMessage(message, type) {
-    if (authMessage) {
-      authMessage.textContent = message;
-      authMessage.className = 'auth-message';
-      authMessage.classList.add(type);
-      authMessage.style.display = 'block';
-      authMessage.style.opacity = '0';
-      authMessage.style.transform = 'translateY(-10px)';
-      
-      // Animate in
-      setTimeout(() => {
-        authMessage.style.opacity = '1';
-        authMessage.style.transform = 'translateY(0)';
-      }, 10);
-
-      setTimeout(() => {
-        authMessage.style.opacity = '0';
-        authMessage.style.transform = 'translateY(-10px)';
-      setTimeout(() => {
-        authMessage.style.display = 'none';
-        }, 300);
-      }, 3000);
-    }
-    }
-  }
+}
 
 // Enhanced Recipe Filtering with smooth animations
 function initializeRecipeFiltering() {
@@ -514,59 +510,81 @@ function initializeSmoothScrolling() {
   });
 }
 
-// Enhanced Authentication Check
-function checkAuth() {
-  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+// Enhanced Authentication Check with Firebase
+async function checkAuth() {
   const authNav = document.querySelector('.auth-nav');
   const contentElements = document.querySelectorAll('.premium-content');
 
-  if (currentUser) {
-    if (authNav) {
-      authNav.innerHTML = `
-        <li><a href="#" class="user-profile">
-          <i class="fas fa-user-circle"></i>
-          Welcome, ${currentUser.name}
-        </a></li>
-        <li><a href="#" class="logout-btn">
-          <i class="fas fa-sign-out-alt"></i>
-          Logout
-        </a></li>
-      `;
+  // Import Firebase auth service
+  let authService;
+  try {
+    const firebaseModule = await import('../../firebase-config.js');
+    authService = firebaseModule.authService;
+  } catch (error) {
+    console.error('Failed to load Firebase auth:', error);
+    return;
+  }
 
-      // Add logout functionality with confirmation
-      const logoutBtn = document.querySelector('.logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          
-          const confirmLogout = confirm('Are you sure you want to logout?');
-          if (confirmLogout) {
-            localStorage.removeItem('currentUser');
-            window.location.reload();
+  // Listen for auth state changes
+  authService.onAuthStateChange(async (user) => {
+    if (user) {
+      // User is logged in
+      const userData = await authService.getUserData(user.uid);
+      
+      if (authNav && userData) {
+        authNav.innerHTML = `
+          <li><a href="#" class="user-profile">
+            <i class="fas fa-user-circle"></i>
+            Welcome, ${userData.name}
+          </a></li>
+          <li><a href="#" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </a></li>
+        `;
+
+        // Add logout functionality with confirmation
+        const logoutBtn = document.querySelector('.logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            const confirmLogout = confirm('Are you sure you want to logout?');
+            if (confirmLogout) {
+              await authService.logout();
+              window.location.reload();
+            }
+          });
+        }
+      }
+
+      // Show premium content based on subscription level
+      if (contentElements.length > 0 && userData) {
+        contentElements.forEach(element => {
+          const requiredLevel = element.dataset.subscriptionLevel || 'free';
+          const userLevel = userData.subscriptionLevel || 'free';
+
+          const levels = {
+            'free': 0,
+            'gold': 1,
+            'platinum': 2
+          };
+
+          if (levels[userLevel] >= levels[requiredLevel]) {
+            element.style.display = 'block';
+            element.style.animation = 'fadeInUp 0.5s ease-out';
           }
         });
       }
+    } else {
+      // User is logged out - show default auth nav
+      if (authNav) {
+        authNav.innerHTML = `
+          <li><a href="login.html">Sign Up</a></li>
+        `;
+      }
     }
-
-    // Show premium content based on subscription level
-    if (contentElements.length > 0) {
-      contentElements.forEach(element => {
-        const requiredLevel = element.dataset.subscriptionLevel || 'free';
-        const userLevel = currentUser.subscriptionLevel || 'free';
-
-        const levels = {
-          'free': 0,
-          'gold': 1,
-          'platinum': 2
-        };
-
-        if (levels[userLevel] >= levels[requiredLevel]) {
-          element.style.display = 'block';
-          element.style.animation = 'fadeInUp 0.5s ease-out';
-        }
-      });
-    }
-  }
+  });
 }
 
 // Recipe data - will be loaded from Firebase

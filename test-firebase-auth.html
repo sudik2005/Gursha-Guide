@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Firebase Authentication</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    .test-section {
+      background: #f5f5f5;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    button {
+      background: #8B4513;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #6B3410;
+    }
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>🔥 Firebase Authentication Test</h1>
+  
+  <div class="test-section">
+    <h2>Test 1: Load Firebase</h2>
+    <button onclick="testFirebaseLoad()">Test Firebase Load</button>
+    <div id="load-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 2: Register User</h2>
+    <input type="email" id="test-email" placeholder="Email" value="test@example.com">
+    <input type="password" id="test-password" placeholder="Password" value="password123">
+    <input type="text" id="test-name" placeholder="Name" value="Test User">
+    <button onclick="testRegister()">Test Register</button>
+    <div id="register-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 3: Login User</h2>
+    <button onclick="testLogin()">Test Login</button>
+    <div id="login-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 4: Check Current User</h2>
+    <button onclick="testCurrentUser()">Check Current User</button>
+    <div id="user-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 5: Check Firestore Users Collection</h2>
+    <button onclick="testFirestoreUsers()">Check Firestore</button>
+    <div id="firestore-result" class="result"></div>
+  </div>
+
+  <script type="module">
+    import { authService } from './firebase-config.js';
+    import { getFirestore, collection, getDocs } from 'firebase/firestore';
+    import { db } from './firebase-config.js';
+
+    window.authService = authService;
+    window.db = db;
+    window.getDocs = getDocs;
+    window.collection = collection;
+
+    window.testFirebaseLoad = async function() {
+      const result = document.getElementById('load-result');
+      try {
+        result.innerHTML = '<span class="success">✅ Firebase loaded successfully!</span>\n';
+        result.innerHTML += 'Auth Service: ' + (authService ? 'Available' : 'Not Available') + '\n';
+        result.innerHTML += 'Database: ' + (db ? 'Available' : 'Not Available');
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Error: ' + error.message + '</span>';
+      }
+    };
+
+    window.testRegister = async function() {
+      const result = document.getElementById('register-result');
+      const email = document.getElementById('test-email').value;
+      const password = document.getElementById('test-password').value;
+      const name = document.getElementById('test-name').value;
+
+      try {
+        result.innerHTML = '⏳ Registering user...';
+        const user = await authService.register(email, password, name);
+        result.innerHTML = '<span class="success">✅ User registered successfully!</span>\n';
+        result.innerHTML += 'User ID: ' + user.uid + '\n';
+        result.innerHTML += 'Email: ' + user.email;
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Error: ' + error.code + '</span>\n';
+        result.innerHTML += error.message;
+      }
+    };
+
+    window.testLogin = async function() {
+      const result = document.getElementById('login-result');
+      const email = document.getElementById('test-email').value;
+      const password = document.getElementById('test-password').value;
+
+      try {
+        result.innerHTML = '⏳ Logging in...';
+        const user = await authService.login(email, password);
+        result.innerHTML = '<span class="success">✅ Login successful!</span>\n';
+        result.innerHTML += 'User ID: ' + user.uid + '\n';
+        result.innerHTML += 'Email: ' + user.email;
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Error: ' + error.code + '</span>\n';
+        result.innerHTML += error.message;
+      }
+    };
+
+    window.testCurrentUser = function() {
+      const result = document.getElementById('user-result');
+      const user = authService.getCurrentUser();
+      
+      if (user) {
+        result.innerHTML = '<span class="success">✅ User is logged in!</span>\n';
+        result.innerHTML += 'User ID: ' + user.uid + '\n';
+        result.innerHTML += 'Email: ' + user.email;
+      } else {
+        result.innerHTML = '<span class="error">❌ No user logged in</span>';
+      }
+    };
+
+    window.testFirestoreUsers = async function() {
+      const result = document.getElementById('firestore-result');
+      
+      try {
+        result.innerHTML = '⏳ Checking Firestore...';
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        result.innerHTML = '<span class="success">✅ Firestore users collection:</span>\n';
+        result.innerHTML += 'Total users: ' + querySnapshot.size + '\n\n';
+        
+        querySnapshot.forEach((doc) => {
+          result.innerHTML += '---\n';
+          result.innerHTML += 'User ID: ' + doc.id + '\n';
+          result.innerHTML += JSON.stringify(doc.data(), null, 2) + '\n';
+        });
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Error: ' + error.code + '</span>\n';
+        result.innerHTML += error.message;
+      }
+    };
+  </script>
+</body>
+</html>
