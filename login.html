@@ -30,41 +30,57 @@
           <li><a href="subscription.html">Subscription</a></li>
         </ul>
         <ul class="nav-links auth-nav">
-          <li><a href="login.html" class="active">Login</a></li>
-          <li><a href="register.html">Register</a></li>
-          <li><button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Toggle dark mode">
-            <span class="dark-mode-icon">🌙</span>
-          </button></li>
+          <li><a href="login.html" class="active">Sign Up</a></li>
         </ul>
+        <button id="dark-mode-toggle" class="dark-mode-btn" aria-label="Toggle dark mode">
+          <span class="dark-mode-icon">🌙</span>
+        </button>
         <div class="menu-toggle">☰</div>
       </nav>
     </div>
   </header>
 
-  <!-- Login Section -->
-  <section style="padding: 5rem 0; background-color: var(--background-accent);">
-    <div class="container">
-      <div class="auth-container">
-        <h1 style="text-align: center; margin-bottom: 2rem;">Login to Your Account</h1>
-        <form id="login-form">
-          <div class="form-group">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" id="email" name="email" class="form-input" required>
+  <!-- Auth Section -->
+  <section style="padding: 5rem 0; background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center;">
+    <div class="auth-slide-container" id="container">
+      <div class="form-container sign-up-container">
+        <form id="register-form">
+          <h1 style="color: var(--primary-color); margin-bottom: 1rem;">Create Account</h1>
+          <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
           </div>
-          <div class="form-group">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" id="password" name="password" class="form-input" required>
-          </div>
-          <div class="form-group" style="text-align: right;">
-            <a href="#" style="font-size: 0.9rem;">Forgot Password?</a>
-          </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-          </div>
-          <div class="auth-message" style="display: none; padding: 1rem; margin: 1rem 0; border-radius: 4px; text-align: center;"></div>
+          <span style="color: #666; margin: 10px 0;">or use your email for registration</span>
+          <input type="text" placeholder="Name" name="name" required />
+          <input type="email" placeholder="Email" name="email" required />
+          <input type="password" placeholder="Password" name="password" required />
+          <button type="submit" class="auth-btn">Sign Up</button>
         </form>
-        <div class="auth-footer">
-          <p>Don't have an account? <a href="register.html">Create one</a></p>
+      </div>
+      <div class="form-container sign-in-container">
+        <form id="login-form">
+          <h1 style="color: var(--primary-color); margin-bottom: 1rem;">Sign In</h1>
+          <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+          </div>
+          <span style="color: #666; margin: 10px 0;">or use your account</span>
+          <input type="email" placeholder="Email" name="email" required />
+          <input type="password" placeholder="Password" name="password" required />
+          <a href="#" style="color: var(--primary-color); margin: 15px 0; font-size: 14px;">Forgot your password?</a>
+          <button type="submit" class="auth-btn">Sign In</button>
+        </form>
+      </div>
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>Welcome Back!</h1>
+            <p>To keep connected with us please login with your personal info</p>
+            <button class="ghost" id="signIn">Sign In</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>Hello, Friend!</h1>
+            <p>Enter your personal details and start your journey with us</p>
+            <button class="ghost" id="signUp">Sign Up</button>
+          </div>
         </div>
       </div>
     </div>

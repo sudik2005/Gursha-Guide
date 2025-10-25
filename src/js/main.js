@@ -1071,6 +1071,21 @@ function updateDarkModeIcon(theme) {
   }
 }
 
+// Sliding Auth Form Functionality
+const signUpButton = document.getElementById('signUp');
+const signInButton = document.getElementById('signIn');
+const authContainer = document.getElementById('container');
+
+if (signUpButton && signInButton && authContainer) {
+  signUpButton.addEventListener('click', () => {
+    authContainer.classList.add("right-panel-active");
+  });
+
+  signInButton.addEventListener('click', () => {
+    authContainer.classList.remove("right-panel-active");
+  });
+}
+
 // Hidden admin access - Press Ctrl+Shift+A to access admin panel
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.shiftKey && e.key === 'A') {
