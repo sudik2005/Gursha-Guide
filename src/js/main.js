@@ -314,7 +314,14 @@ function initializeRecipeFiltering() {
 }
 
 // Enhanced Subscription Handling
+// DISABLED: Now using payment verification system (payment-verification.js)
+// This old handler has been replaced with Ethiopian payment integration
 function initializeSubscriptionHandling() {
+  // Subscription handling is now done in payment-verification.js
+  // This function is kept for backwards compatibility but does nothing
+  return;
+  
+  /* OLD CODE COMMENTED OUT - DO NOT USE
   const subscriptionForms = document.querySelectorAll('.subscription-form');
 
   if (subscriptionForms.length > 0) {
@@ -389,6 +396,7 @@ function initializeSubscriptionHandling() {
       });
     });
   }
+  */
 
   function showSubscriptionSuccess(level) {
     const successMessage = document.createElement('div');
