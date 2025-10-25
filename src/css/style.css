@@ -334,7 +334,12 @@ img {
   font-size: 2rem;
   cursor: pointer;
   align-items: center;
+  justify-content: center;
   height: 56px;
+  color: #000000;
+  background: none;
+  border: none;
+  padding: 0.5rem;
 }
 
 /* Dark Mode Toggle Button */
@@ -1027,27 +1032,35 @@ img {
   .navbar {
     height: 60px;
     padding: 0 1rem;
-    flex-wrap: nowrap;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-wrap: nowrap !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
   }
 
   .logo {
     font-size: 1.3rem;
     height: 60px;
     flex-shrink: 0;
+    order: 1;
+  }
+
+  .nav-links:not(.auth-nav) {
+    order: 2;
   }
 
   .auth-nav {
-    display: none;
+    display: none !important;
   }
 
   .menu-toggle {
-    display: flex;
+    display: flex !important;
     align-items: center;
-    margin-left: auto;
+    justify-content: center;
+    height: 60px;
     order: 3;
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
   .nav-links {
