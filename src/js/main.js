@@ -198,8 +198,8 @@ async function initializeAuthentication() {
       submitBtn.textContent = 'Signing in...';
       submitBtn.disabled = true;
 
-      const emailInput = loginForm.querySelector('input[name="email"]') || loginForm.querySelector('input[type="email"]');
-      const passwordInput = loginForm.querySelector('input[name="password"]') || loginForm.querySelector('input[type="password"]');
+      const emailInput = loginForm.querySelector('#login-email') || loginForm.querySelector('input[name="email"]') || loginForm.querySelector('input[type="email"]');
+      const passwordInput = loginForm.querySelector('#login-password') || loginForm.querySelector('input[name="password"]') || loginForm.querySelector('input[type="password"]');
 
       if (!emailInput || !passwordInput) {
         showErrorMessage('Please fill in all required fields', loginForm);
@@ -231,18 +231,54 @@ async function initializeAuthentication() {
         console.error('Error code:', error.code);
         console.error('Error message:', error.message);
         
-        let errorMessage = 'Invalid email or password: ' + error.message;
+        let errorMessage = '';
+        let showSignUpLink = false;
+        
         if (error.code === 'auth/user-not-found') {
-          errorMessage = 'No account found with this email';
+          errorMessage = 'No account found with this email. Please sign up first.';
+          showSignUpLink = true;
         } else if (error.code === 'auth/wrong-password') {
-          errorMessage = 'Incorrect password';
+          errorMessage = 'Incorrect password. Please try again or reset your password.';
         } else if (error.code === 'auth/invalid-email') {
-          errorMessage = 'Invalid email address';
+          errorMessage = 'Invalid email address. Please check your email and try again.';
         } else if (error.code === 'auth/invalid-credential') {
-          errorMessage = 'Invalid email or password';
+          errorMessage = 'Invalid email or password. If you don\'t have an account, please sign up first.';
+          showSignUpLink = true;
+        } else if (error.code === 'auth/operation-not-allowed') {
+          errorMessage = 'Email/password authentication is not enabled. Please contact support.';
+        } else if (error.code === 'auth/too-many-requests') {
+          errorMessage = 'Too many failed login attempts. Please try again later.';
+        } else {
+          errorMessage = 'Login failed: ' + (error.message || 'Unknown error');
         }
         
         showErrorMessage(errorMessage, loginForm);
+        
+        // Show sign up link if user doesn't exist
+        if (showSignUpLink) {
+          const messageEl = loginForm.querySelector('.auth-message');
+          if (messageEl) {
+            // Remove existing sign up link if any
+            const existingLink = messageEl.querySelector('a.sign-up-link');
+            if (existingLink) {
+              existingLink.remove();
+            }
+            
+            const signUpLink = document.createElement('a');
+            signUpLink.href = '#';
+            signUpLink.className = 'sign-up-link';
+            signUpLink.textContent = 'Click here to create an account';
+            signUpLink.style.cssText = 'display: block; margin-top: 0.5rem; color: var(--primary-color); text-decoration: underline; font-weight: 600; cursor: pointer;';
+            signUpLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              if (typeof switchAuthTab === 'function') {
+                switchAuthTab('register');
+              }
+            });
+            messageEl.appendChild(signUpLink);
+          }
+        }
+        
         loginForm.style.animation = 'shake 0.5s ease-in-out';
         setTimeout(() => {
           loginForm.style.animation = '';
@@ -267,11 +303,11 @@ async function initializeAuthentication() {
       submitBtn.textContent = 'Creating account...';
       submitBtn.disabled = true;
 
-      // Get form values - handle both login.html (sliding form) and register.html
-      const nameInput = registerForm.querySelector('input[name="name"]') || registerForm.querySelector('#name');
-      const emailInput = registerForm.querySelector('input[name="email"]') || registerForm.querySelector('#email');
-      const passwordInput = registerForm.querySelector('input[name="password"]') || registerForm.querySelector('#password');
-      const confirmPasswordInput = registerForm.querySelector('input[name="confirm-password"]') || registerForm.querySelector('#confirm-password');
+      // Get form values from form
+      const nameInput = registerForm.querySelector('#register-name') || registerForm.querySelector('input[name="name"]');
+      const emailInput = registerForm.querySelector('#register-email') || registerForm.querySelector('input[name="email"]');
+      const passwordInput = registerForm.querySelector('#register-password') || registerForm.querySelector('input[name="password"]');
+      const confirmPasswordInput = registerForm.querySelector('#register-confirm-password') || registerForm.querySelector('input[name="confirm-password"]');
 
       if (!nameInput || !emailInput || !passwordInput) {
         showErrorMessage('Please fill in all required fields', registerForm);
@@ -1252,22 +1288,38 @@ function updateDarkModeIcon(theme) {
   }
 }
 
-// Sliding Auth Form Functionality
+// Tab-based Auth Form Functionality
 function initializeSlidingAuthForm() {
-  const signUpButton = document.getElementById('signUp');
-  const signInButton = document.getElementById('signIn');
-  const authContainer = document.getElementById('container');
-
-  if (signUpButton && signInButton && authContainer) {
-    signUpButton.addEventListener('click', () => {
-      authContainer.classList.add("right-panel-active");
-    });
-
-    signInButton.addEventListener('click', () => {
-      authContainer.classList.remove("right-panel-active");
-    });
+  // Check URL parameter to show register form by default
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('mode') === 'register') {
+    switchAuthTab('register');
+  } else {
+    switchAuthTab('login');
   }
 }
+
+// Switch between login and register tabs
+window.switchAuthTab = function(tab) {
+  const loginTab = document.getElementById('loginTab');
+  const registerTab = document.getElementById('registerTab');
+  const loginContainer = document.getElementById('loginFormContainer');
+  const registerContainer = document.getElementById('registerFormContainer');
+
+  if (tab === 'register') {
+    // Show register form
+    if (loginTab) loginTab.classList.remove('active');
+    if (registerTab) registerTab.classList.add('active');
+    if (loginContainer) loginContainer.classList.remove('active');
+    if (registerContainer) registerContainer.classList.add('active');
+  } else {
+    // Show login form
+    if (loginTab) loginTab.classList.add('active');
+    if (registerTab) registerTab.classList.remove('active');
+    if (loginContainer) loginContainer.classList.add('active');
+    if (registerContainer) registerContainer.classList.remove('active');
+  }
+};
 
 // Hidden admin access - Press Ctrl+Shift+A to access admin panel
 document.addEventListener('keydown', (e) => {
