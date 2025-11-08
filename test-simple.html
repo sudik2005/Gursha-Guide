@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Firebase Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin: 20px 0;
+    }
+    button {
+      background: #8B4513;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #6B3410;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+    h1 { color: #333; }
+    h2 { color: #666; margin-top: 0; }
+  </style>
+</head>
+<body>
+  <div class="test-box">
+    <h1>🔥 Simple Firebase Test</h1>
+    <p>This will test if Firebase is loading correctly.</p>
+    
+    <button onclick="test1()">1. Test Basic Loading</button>
+    <button onclick="test2()">2. Test Firebase Import</button>
+    <button onclick="test3()">3. Test Auth Service</button>
+    
+    <div id="result" class="result">Click a button to start testing...</div>
+  </div>
+
+  <div class="test-box">
+    <h2>📝 Quick Registration Test</h2>
+    <input type="text" id="name" placeholder="Name" value="Test User" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+    <input type="email" id="email" placeholder="Email" value="test@example.com" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+    <input type="password" id="password" placeholder="Password" value="password123" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+    <button onclick="testRegister()">Register User</button>
+    <button onclick="testLogin()">Login User</button>
+    
+    <div id="result2" class="result" style="display:none;"></div>
+  </div>
+
+  <script type="module">
+    // Test 1: Basic JavaScript
+    window.test1 = function() {
+      const result = document.getElementById('result');
+      result.innerHTML = '<span class="success">✅ JavaScript is working!</span>\n\nBrowser: ' + navigator.userAgent.split(' ').pop() + '\nPage loaded successfully';
+    };
+
+    // Test 2: Try to import Firebase
+    window.test2 = async function() {
+      const result = document.getElementById('result');
+      result.innerHTML = '⏳ Loading Firebase...';
+      
+      try {
+        const module = await import('./firebase-config.js');
+        result.innerHTML = '<span class="success">✅ Firebase module loaded!</span>\n\nModule contents:\n' + Object.keys(module).join('\n');
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Failed to load Firebase</span>\n\nError: ' + error.message + '\n\nThis usually means:\n1. Dev server not running (run: npm run dev)\n2. File path incorrect\n3. Firebase not installed';
+      }
+    };
+
+    // Test 3: Test Auth Service
+    window.test3 = async function() {
+      const result = document.getElementById('result');
+      result.innerHTML = '⏳ Testing Auth Service...';
+      
+      try {
+        const { authService } = await import('./firebase-config.js');
+        
+        if (!authService) {
+          throw new Error('authService is undefined');
+        }
+        
+        const methods = Object.keys(authService);
+        result.innerHTML = '<span class="success">✅ Auth Service Available!</span>\n\nAvailable methods:\n' + methods.join('\n');
+        
+        // Store for other tests
+        window.authService = authService;
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Auth Service Error</span>\n\nError: ' + error.message;
+      }
+    };
+
+    // Test Registration
+    window.testRegister = async function() {
+      const result = document.getElementById('result2');
+      result.style.display = 'block';
+      result.innerHTML = '⏳ Registering user...';
+      
+      try {
+        if (!window.authService) {
+          const { authService } = await import('./firebase-config.js');
+          window.authService = authService;
+        }
+        
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        const user = await window.authService.register(email, password, name);
+        
+        result.innerHTML = '<span class="success">✅ Registration Successful!</span>\n\nUser ID: ' + user.uid + '\nEmail: ' + user.email + '\n\nCheck Firebase Console → Authentication → Users';
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Registration Failed</span>\n\nError: ' + error.message + '\n\nCode: ' + error.code;
+      }
+    };
+
+    // Test Login
+    window.testLogin = async function() {
+      const result = document.getElementById('result2');
+      result.style.display = 'block';
+      result.innerHTML = '⏳ Logging in...';
+      
+      try {
+        if (!window.authService) {
+          const { authService } = await import('./firebase-config.js');
+          window.authService = authService;
+        }
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        const user = await window.authService.login(email, password);
+        const userData = await window.authService.getUserData(user.uid);
+        
+        result.innerHTML = '<span class="success">✅ Login Successful!</span>\n\nUser ID: ' + user.uid + '\nEmail: ' + user.email + '\nName: ' + userData.name + '\nSubscription: ' + userData.subscriptionLevel;
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ Login Failed</span>\n\nError: ' + error.message + '\n\nCode: ' + error.code;
+      }
+    };
+
+    // Auto-run test 1 on load
+    window.addEventListener('load', () => {
+      console.log('Page loaded, ready to test!');
+    });
+  </script>
+</body>
+</html>

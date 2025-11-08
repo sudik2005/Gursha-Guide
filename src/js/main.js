@@ -12,9 +12,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeLazyLoading();
   initializeSmoothScrolling();
   initializeDarkMode();
+  initializeSlidingAuthForm();
   
-  // Check authentication on load
-  checkAuth();
+  // Check authentication on load (await it!)
+  console.log('Checking authentication...');
+  await checkAuth();
+  console.log('Authentication check complete');
   
   // Load recipes from Firebase
   console.log('Loading recipes from Firebase...');
@@ -88,16 +91,85 @@ function initializeMobileMenu() {
   }
 }
 
+// Helper functions for user feedback
+function showErrorMessage(message, formElement = null) {
+  // Try to find message element in the form or nearby
+  let messageEl = null;
+  if (formElement) {
+    messageEl = formElement.querySelector('.auth-message');
+  }
+  if (!messageEl) {
+    messageEl = document.querySelector('.auth-message');
+  }
+  
+  if (messageEl) {
+    messageEl.textContent = message;
+    messageEl.className = 'auth-message error';
+    messageEl.style.display = 'block';
+    // Scroll to message if needed
+    messageEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      messageEl.style.display = 'none';
+    }, 5000);
+  } else {
+    // Fallback to alert
+    alert(message);
+  }
+}
+
+function showSuccessMessage(message, formElement = null) {
+  // Try to find message element in the form or nearby
+  let messageEl = null;
+  if (formElement) {
+    messageEl = formElement.querySelector('.auth-message');
+  }
+  if (!messageEl) {
+    messageEl = document.querySelector('.auth-message');
+  }
+  
+  if (messageEl) {
+    messageEl.textContent = message;
+    messageEl.className = 'auth-message success';
+    messageEl.style.display = 'block';
+    // Scroll to message if needed
+    messageEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      messageEl.style.display = 'none';
+    }, 3000);
+  } else {
+    // Fallback to alert
+    alert(message);
+  }
+}
+
 // Enhanced Authentication with Firebase
 async function initializeAuthentication() {
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
 
+  console.log('Authentication initialization:', {
+    loginForm: !!loginForm,
+    registerForm: !!registerForm,
+    currentPage: window.location.pathname
+  });
+
   // Import Firebase auth service
   let authService;
   try {
     console.log('Loading Firebase auth service...');
-    const firebaseModule = await import('../../firebase-config.js');
+    // Try relative path first, fallback to absolute
+    let firebaseModule;
+    try {
+      firebaseModule = await import('../../firebase-config.js');
+    } catch (e) {
+      try {
+        firebaseModule = await import('/firebase-config.js');
+      } catch (e2) {
+        throw new Error(`Failed to import Firebase config: ${e.message}. Also tried: ${e2.message}`);
+      }
+    }
     console.log('Firebase module loaded:', firebaseModule);
     authService = firebaseModule.authService;
     console.log('Auth service:', authService);
@@ -109,7 +181,8 @@ async function initializeAuthentication() {
     }
   } catch (error) {
     console.error('Failed to load Firebase auth:', error);
-    alert('Failed to load authentication system: ' + error.message);
+    console.error('Error details:', error.stack);
+    alert('Failed to load authentication system: ' + error.message + '\n\nPlease check:\n1. Firebase is properly configured\n2. You are connected to the internet\n3. Check browser console for details');
     return;
   }
 
@@ -125,14 +198,24 @@ async function initializeAuthentication() {
       submitBtn.textContent = 'Signing in...';
       submitBtn.disabled = true;
 
-      const email = loginForm.querySelector('input[name="email"]').value;
-      const password = loginForm.querySelector('input[name="password"]').value;
+      const emailInput = loginForm.querySelector('input[name="email"]') || loginForm.querySelector('input[type="email"]');
+      const passwordInput = loginForm.querySelector('input[name="password"]') || loginForm.querySelector('input[type="password"]');
+
+      if (!emailInput || !passwordInput) {
+        showErrorMessage('Please fill in all required fields', loginForm);
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
 
       try {
         console.log('Attempting to login user:', email);
         const user = await authService.login(email, password);
         console.log('User logged in successfully:', user);
-        alert('Login successful! Redirecting...');
+        showSuccessMessage('Login successful! Redirecting...', loginForm);
         
         // Add success animation
         loginForm.style.transform = 'scale(0.95)';
@@ -159,7 +242,7 @@ async function initializeAuthentication() {
           errorMessage = 'Invalid email or password';
         }
         
-        alert(errorMessage);
+        showErrorMessage(errorMessage, loginForm);
         loginForm.style.animation = 'shake 0.5s ease-in-out';
         setTimeout(() => {
           loginForm.style.animation = '';
@@ -184,15 +267,53 @@ async function initializeAuthentication() {
       submitBtn.textContent = 'Creating account...';
       submitBtn.disabled = true;
 
-      const name = registerForm.querySelector('input[name="name"]').value;
-      const email = registerForm.querySelector('input[name="email"]').value;
-      const password = registerForm.querySelector('input[name="password"]').value;
+      // Get form values - handle both login.html (sliding form) and register.html
+      const nameInput = registerForm.querySelector('input[name="name"]') || registerForm.querySelector('#name');
+      const emailInput = registerForm.querySelector('input[name="email"]') || registerForm.querySelector('#email');
+      const passwordInput = registerForm.querySelector('input[name="password"]') || registerForm.querySelector('#password');
+      const confirmPasswordInput = registerForm.querySelector('input[name="confirm-password"]') || registerForm.querySelector('#confirm-password');
+
+      if (!nameInput || !emailInput || !passwordInput) {
+        showErrorMessage('Please fill in all required fields', registerForm);
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : null;
+
+      // Validate password confirmation if field exists
+      if (confirmPasswordInput && password !== confirmPassword) {
+        showErrorMessage('Passwords do not match', registerForm);
+        registerForm.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+          registerForm.style.animation = '';
+        }, 500);
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // Validate password strength
+      if (password.length < 6) {
+        showErrorMessage('Password must be at least 6 characters long', registerForm);
+        registerForm.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+          registerForm.style.animation = '';
+        }, 500);
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        return;
+      }
 
       try {
         console.log('Attempting to register user:', email);
         const user = await authService.register(email, password, name);
         console.log('User registered successfully:', user);
-        alert('Registration successful! Redirecting...');
+        showSuccessMessage('Registration successful! Redirecting...', registerForm);
         
         // Add success animation
         registerForm.style.transform = 'scale(0.95)';
@@ -210,14 +331,16 @@ async function initializeAuthentication() {
         
         let errorMessage = 'Registration failed: ' + error.message;
         if (error.code === 'auth/email-already-in-use') {
-          errorMessage = 'Email already registered';
+          errorMessage = 'Email already registered. Please use a different email or try logging in.';
         } else if (error.code === 'auth/weak-password') {
           errorMessage = 'Password should be at least 6 characters';
         } else if (error.code === 'auth/invalid-email') {
           errorMessage = 'Invalid email address';
+        } else if (error.code === 'auth/operation-not-allowed') {
+          errorMessage = 'Email/password authentication is not enabled. Please contact support.';
         }
         
-        alert(errorMessage);
+        showErrorMessage(errorMessage, registerForm);
         registerForm.style.animation = 'shake 0.5s ease-in-out';
         setTimeout(() => {
           registerForm.style.animation = '';
@@ -515,44 +638,76 @@ async function checkAuth() {
   const authNav = document.querySelector('.auth-nav');
   const contentElements = document.querySelectorAll('.premium-content');
 
+  console.log('checkAuth: Starting...');
+  console.log('checkAuth: authNav element found:', !!authNav);
+
   // Import Firebase auth service
   let authService;
   try {
-    const firebaseModule = await import('../../firebase-config.js');
+    console.log('checkAuth: Loading Firebase auth service...');
+    let firebaseModule;
+    try {
+      firebaseModule = await import('../../firebase-config.js');
+    } catch (e) {
+      firebaseModule = await import('/firebase-config.js');
+    }
     authService = firebaseModule.authService;
+    console.log('checkAuth: Firebase auth service loaded');
   } catch (error) {
     console.error('Failed to load Firebase auth:', error);
     return;
   }
 
   // Listen for auth state changes
+  console.log('checkAuth: Setting up auth state listener...');
   authService.onAuthStateChange(async (user) => {
+    console.log('checkAuth: Auth state changed, user:', user ? user.email : 'null');
+    
+    // Re-query authNav in case it wasn't available before
+    const currentAuthNav = document.querySelector('.auth-nav');
+    console.log('checkAuth: Current authNav element found:', !!currentAuthNav);
+    
     if (user) {
       // User is logged in
+      console.log('checkAuth: User is logged in, fetching user data...');
       const userData = await authService.getUserData(user.uid);
+      console.log('checkAuth: User data retrieved:', userData);
       
-      if (authNav && userData) {
-        authNav.innerHTML = `
+      if (currentAuthNav && userData) {
+        console.log('checkAuth: Updating navbar with user info...');
+        currentAuthNav.innerHTML = `
           <li><a href="#" class="user-profile">
             <i class="fas fa-user-circle"></i>
             Welcome, ${userData.name}
           </a></li>
-          <li><a href="#" class="logout-btn">
+          <li><a href="#" class="logout-btn" id="logout-btn">
             <i class="fas fa-sign-out-alt"></i>
             Logout
           </a></li>
         `;
+        console.log('checkAuth: Navbar updated successfully');
 
         // Add logout functionality with confirmation
-        const logoutBtn = document.querySelector('.logout-btn');
+        const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
-          logoutBtn.addEventListener('click', async (e) => {
+          // Remove any existing listeners by cloning the element
+          const newLogoutBtn = logoutBtn.cloneNode(true);
+          logoutBtn.parentNode.replaceChild(newLogoutBtn, logoutBtn);
+          
+          newLogoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             
             const confirmLogout = confirm('Are you sure you want to logout?');
             if (confirmLogout) {
-              await authService.logout();
-              window.location.reload();
+              try {
+                console.log('Logging out...');
+                await authService.logout();
+                console.log('Logout successful, reloading page...');
+                window.location.href = 'index.html';
+              } catch (error) {
+                console.error('Logout error:', error);
+                alert('Failed to logout: ' + error.message);
+              }
             }
           });
         }
@@ -578,10 +733,12 @@ async function checkAuth() {
       }
     } else {
       // User is logged out - show default auth nav
-      if (authNav) {
-        authNav.innerHTML = `
+      console.log('checkAuth: User is logged out, showing Sign Up button');
+      if (currentAuthNav) {
+        currentAuthNav.innerHTML = `
           <li><a href="login.html">Sign Up</a></li>
         `;
+        console.log('checkAuth: Sign Up button displayed');
       }
     }
   });
@@ -594,7 +751,13 @@ let recipes = [];
 async function loadRecipesFromFirebase() {
   try {
     console.log('Importing Firebase config...');
-    const { recipeService } = await import('../../firebase-config.js');
+    let firebaseModule;
+    try {
+      firebaseModule = await import('../../firebase-config.js');
+    } catch (e) {
+      firebaseModule = await import('/firebase-config.js');
+    }
+    const { recipeService } = firebaseModule;
     console.log('Firebase config imported successfully');
     
     console.log('Getting recipes from Firebase...');
@@ -1090,18 +1253,20 @@ function updateDarkModeIcon(theme) {
 }
 
 // Sliding Auth Form Functionality
-const signUpButton = document.getElementById('signUp');
-const signInButton = document.getElementById('signIn');
-const authContainer = document.getElementById('container');
+function initializeSlidingAuthForm() {
+  const signUpButton = document.getElementById('signUp');
+  const signInButton = document.getElementById('signIn');
+  const authContainer = document.getElementById('container');
 
-if (signUpButton && signInButton && authContainer) {
-  signUpButton.addEventListener('click', () => {
-    authContainer.classList.add("right-panel-active");
-  });
+  if (signUpButton && signInButton && authContainer) {
+    signUpButton.addEventListener('click', () => {
+      authContainer.classList.add("right-panel-active");
+    });
 
-  signInButton.addEventListener('click', () => {
-    authContainer.classList.remove("right-panel-active");
-  });
+    signInButton.addEventListener('click', () => {
+      authContainer.classList.remove("right-panel-active");
+    });
+  }
 }
 
 // Hidden admin access - Press Ctrl+Shift+A to access admin panel

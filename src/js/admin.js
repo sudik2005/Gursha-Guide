@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadRecipes();
   initializeDarkMode();
   initializePasteFormatting();
+  initializePaymentVerifications();
 });
 
 // Tab functionality
@@ -519,6 +520,332 @@ function processBulkPaste(listId) {
   textarea.remove();
   container.querySelector('.btn-primary').remove();
 }
+
+// Payment Verifications
+let allPayments = [];
+let filteredPayments = [];
+
+function initializePaymentVerifications() {
+  // Load payments when payments tab is clicked
+  const paymentsTab = document.querySelector('[data-tab="payments"]');
+  if (paymentsTab) {
+    paymentsTab.addEventListener('click', () => {
+      loadPaymentVerifications();
+    });
+  }
+
+  // Setup filters
+  const searchInput = document.getElementById('paymentSearch');
+  const statusFilter = document.getElementById('paymentStatusFilter');
+  const planFilter = document.getElementById('paymentPlanFilter');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', filterPayments);
+  }
+  if (statusFilter) {
+    statusFilter.addEventListener('change', filterPayments);
+  }
+  if (planFilter) {
+    planFilter.addEventListener('change', filterPayments);
+  }
+}
+
+function loadPaymentVerifications() {
+  try {
+    allPayments = JSON.parse(localStorage.getItem('pendingVerifications') || '[]');
+    
+    // Sort by date (newest first)
+    allPayments.sort((a, b) => {
+      const dateA = new Date(a.timestamp || 0);
+      const dateB = new Date(b.timestamp || 0);
+      return dateB - dateA;
+    });
+
+    filteredPayments = [...allPayments];
+    updatePaymentStats();
+    displayPayments();
+  } catch (error) {
+    console.error('Error loading payment verifications:', error);
+    allPayments = [];
+    filteredPayments = [];
+    displayPayments();
+  }
+}
+
+function updatePaymentStats() {
+  const total = allPayments.length;
+  const pending = allPayments.filter(p => (p.status || 'pending') === 'pending').length;
+  const verified = allPayments.filter(p => p.status === 'verified').length;
+  const totalAmount = allPayments
+    .filter(p => p.status === 'verified')
+    .reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+
+  const totalPaymentsEl = document.getElementById('totalPayments');
+  const pendingPaymentsEl = document.getElementById('pendingPayments');
+  const verifiedPaymentsEl = document.getElementById('verifiedPayments');
+  const totalAmountEl = document.getElementById('totalAmount');
+
+  if (totalPaymentsEl) totalPaymentsEl.textContent = total;
+  if (pendingPaymentsEl) pendingPaymentsEl.textContent = pending;
+  if (verifiedPaymentsEl) verifiedPaymentsEl.textContent = verified;
+  if (totalAmountEl) totalAmountEl.textContent = `${totalAmount.toFixed(2)} ETB`;
+}
+
+function filterPayments() {
+  const searchInput = document.getElementById('paymentSearch');
+  const statusFilter = document.getElementById('paymentStatusFilter');
+  const planFilter = document.getElementById('paymentPlanFilter');
+
+  const searchTerm = (searchInput?.value || '').toLowerCase();
+  const statusValue = statusFilter?.value || 'all';
+  const planValue = planFilter?.value || 'all';
+
+  filteredPayments = allPayments.filter(payment => {
+    const matchesSearch = !searchTerm || 
+      (payment.userName && payment.userName.toLowerCase().includes(searchTerm)) ||
+      (payment.userEmail && payment.userEmail.toLowerCase().includes(searchTerm)) ||
+      (payment.transactionRef && payment.transactionRef.toLowerCase().includes(searchTerm));
+
+    const matchesStatus = statusValue === 'all' || (payment.status || 'pending') === statusValue;
+    const matchesPlan = planValue === 'all' || payment.subscriptionLevel === planValue;
+
+    return matchesSearch && matchesStatus && matchesPlan;
+  });
+
+  displayPayments();
+}
+
+function displayPayments() {
+  const tbody = document.getElementById('paymentsTableBody');
+  const noPayments = document.getElementById('noPayments');
+
+  if (!tbody) return;
+
+  if (filteredPayments.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="9" style="text-align: center; padding: 2rem; color: #999;">
+          No payment verifications found.
+        </td>
+      </tr>
+    `;
+    if (noPayments) noPayments.style.display = 'block';
+    return;
+  }
+
+  if (noPayments) noPayments.style.display = 'none';
+
+  tbody.innerHTML = filteredPayments.map((payment, index) => {
+    const date = new Date(payment.timestamp);
+    const status = payment.status || 'pending';
+    const statusClass = `status-${status}`;
+    const planName = payment.subscriptionLevel ? 
+      payment.subscriptionLevel.charAt(0).toUpperCase() + payment.subscriptionLevel.slice(1) : 'N/A';
+    
+    return `
+      <tr>
+        <td>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</td>
+        <td>
+          <div class="user-info">
+            <div class="user-name">${payment.userName || 'N/A'}</div>
+            <div class="user-email">${payment.userEmail || 'N/A'}</div>
+          </div>
+        </td>
+        <td><span class="subscription-badge badge-${payment.subscriptionLevel || 'free'}">${planName}</span></td>
+        <td><strong>${payment.amount || 0} ${payment.currency || 'ETB'}</strong></td>
+        <td>${payment.paymentMethod ? payment.paymentMethod.toUpperCase() : 'N/A'}</td>
+        <td><code>${payment.transactionRef || 'N/A'}</code></td>
+        <td><span class="status-badge ${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></td>
+        <td>
+          ${payment.hasScreenshot || payment.screenshot ? 
+            `<button class="screenshot-btn" onclick="viewPaymentScreenshot(${index})">
+              <i class="fas fa-image"></i> View
+            </button>` : 
+            '<span style="color: #999;">No screenshot</span>'
+          }
+        </td>
+        <td>
+          <div class="action-buttons">
+            ${status === 'pending' ? `
+              <button class="btn-verify" onclick="verifyPayment(${index})" title="Verify Payment">
+                <i class="fas fa-check"></i> Verify
+              </button>
+              <button class="btn-reject" onclick="rejectPayment(${index})" title="Reject Payment">
+                <i class="fas fa-times"></i> Reject
+              </button>
+            ` : status === 'verified' ? `
+              <span style="color: #27ae60;"><i class="fas fa-check-circle"></i> Verified</span>
+            ` : `
+              <span style="color: #e74c3c;"><i class="fas fa-times-circle"></i> Rejected</span>
+            `}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function viewPaymentScreenshot(index) {
+  const payment = filteredPayments[index];
+  if (!payment || !payment.screenshot) {
+    alert('No screenshot available for this payment');
+    return;
+  }
+
+  // Create modal
+  const modal = document.createElement('div');
+  modal.className = 'screenshot-modal';
+  modal.innerHTML = `
+    <div class="screenshot-modal-content">
+      <div class="screenshot-modal-header">
+        <div>
+          <h3>Payment Screenshot</h3>
+          <p style="color: #666; margin-top: 0.5rem;">
+            <strong>User:</strong> ${payment.userName} (${payment.userEmail})<br>
+            <strong>Plan:</strong> ${payment.subscriptionLevel}<br>
+            <strong>Amount:</strong> ${payment.amount} ${payment.currency || 'ETB'}<br>
+            <strong>Transaction:</strong> ${payment.transactionRef}<br>
+            <strong>Date:</strong> ${new Date(payment.timestamp).toLocaleString()}
+          </p>
+        </div>
+        <button class="screenshot-modal-close" onclick="this.closest('.screenshot-modal').remove()">&times;</button>
+      </div>
+      <img src="${payment.screenshot}" alt="Payment screenshot">
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Close on outside click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+
+  // Close on Escape key
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+}
+
+async function verifyPayment(index) {
+  const payment = filteredPayments[index];
+  if (!payment) return;
+
+  if (!confirm(`Verify payment for ${payment.userName}?\n\nPlan: ${payment.subscriptionLevel}\nAmount: ${payment.amount} ETB\nTransaction: ${payment.transactionRef}`)) {
+    return;
+  }
+
+  try {
+    // Import authService and Firestore to activate subscription
+    const { authService, db } = await import('../../firebase-config.js');
+    const { collection, query, where, getDocs } = await import('firebase/firestore');
+
+    // Find user by email in Firestore
+    let userUid = null;
+    if (payment.userEmail) {
+      try {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('email', '==', payment.userEmail));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          userUid = querySnapshot.docs[0].id;
+          console.log('Found user:', userUid);
+        }
+      } catch (error) {
+        console.error('Error finding user:', error);
+      }
+    }
+
+    // Update payment status
+    payment.status = 'verified';
+    payment.verifiedAt = new Date().toISOString();
+    payment.verifiedBy = 'admin';
+
+    // Try to activate subscription if user was found
+    if (userUid) {
+      try {
+        await authService.updateSubscription(userUid, payment.subscriptionLevel);
+        console.log('Subscription activated for user:', userUid);
+        
+        // Update in localStorage
+        updatePaymentInStorage(payment);
+        loadPaymentVerifications();
+        
+        alert('Payment verified and subscription activated successfully!');
+      } catch (error) {
+        console.error('Error activating subscription:', error);
+        // Still mark as verified even if subscription activation fails
+        updatePaymentInStorage(payment);
+        loadPaymentVerifications();
+        alert('Payment verified! Note: Subscription activation failed. Please activate manually in Firebase.');
+      }
+    } else {
+      // User not found, just mark payment as verified
+      updatePaymentInStorage(payment);
+      loadPaymentVerifications();
+      alert('Payment verified! Note: User not found in database. Please activate subscription manually for: ' + payment.userEmail);
+    }
+  } catch (error) {
+    console.error('Error verifying payment:', error);
+    alert('Error verifying payment: ' + error.message);
+  }
+}
+
+function rejectPayment(index) {
+  const payment = filteredPayments[index];
+  if (!payment) return;
+
+  const reason = prompt(`Reject payment for ${payment.userName}?\n\nEnter rejection reason (optional):`);
+  
+  payment.status = 'rejected';
+  payment.rejectedAt = new Date().toISOString();
+  payment.rejectionReason = reason || 'No reason provided';
+  payment.rejectedBy = 'admin';
+
+  updatePaymentInStorage(payment);
+  loadPaymentVerifications();
+
+  alert('Payment rejected.');
+}
+
+function updatePaymentInStorage(updatedPayment) {
+  const payments = JSON.parse(localStorage.getItem('pendingVerifications') || '[]');
+  const index = payments.findIndex(p => p.id === updatedPayment.id || 
+    (p.timestamp === updatedPayment.timestamp && p.userEmail === updatedPayment.userEmail));
+  
+  if (index !== -1) {
+    payments[index] = updatedPayment;
+  } else {
+    // Find by matching properties
+    const matchIndex = payments.findIndex(p => 
+      p.transactionRef === updatedPayment.transactionRef &&
+      p.userEmail === updatedPayment.userEmail
+    );
+    if (matchIndex !== -1) {
+      payments[matchIndex] = updatedPayment;
+    }
+  }
+  
+  localStorage.setItem('pendingVerifications', JSON.stringify(payments));
+  allPayments = payments;
+}
+
+function refreshPayments() {
+  loadPaymentVerifications();
+}
+
+// Make functions globally available
+window.viewPaymentScreenshot = viewPaymentScreenshot;
+window.verifyPayment = verifyPayment;
+window.rejectPayment = rejectPayment;
+window.refreshPayments = refreshPayments;
 
 // Add CSS animations
 const style = document.createElement('style');

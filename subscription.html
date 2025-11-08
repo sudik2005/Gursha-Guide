@@ -260,6 +260,75 @@
       border: 1px solid #f5c6cb;
     }
 
+    /* Screenshot Upload Styles */
+    .screenshot-upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--background-accent);
+    }
+
+    .screenshot-upload-area:hover {
+      border-color: var(--primary-color);
+      background: rgba(139, 69, 19, 0.05);
+    }
+
+    .screenshot-upload-area i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .screenshot-upload-area p {
+      margin: 0.5rem 0;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .screenshot-upload-area small {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .screenshot-preview {
+      margin-top: 1rem;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid var(--border-color);
+    }
+
+    .screenshot-preview img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      display: block;
+      background: var(--background-accent);
+    }
+
+    .remove-screenshot {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(231, 76, 60, 0.9);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .remove-screenshot:hover {
+      background: #e74c3c;
+      transform: scale(1.05);
+    }
+
     .comparison-table i.fa-times {
       color: #999;
     }
@@ -357,7 +426,7 @@
         <div class="plan-card plan-gold">
           <div class="plan-header">
             <h3>Gold</h3>
-            <div class="plan-price">299 Birr</div>
+            <div class="plan-price">50 ETB</div>
             <div class="plan-duration">per month</div>
           </div>
           <div class="plan-features">
@@ -376,7 +445,7 @@
         <div class="plan-card plan-platinum">
           <div class="plan-header">
             <h3>Platinum</h3>
-            <div class="plan-price">499 Birr</div>
+            <div class="plan-price">150 ETB</div>
             <div class="plan-duration">per month</div>
           </div>
           <div class="plan-features">
@@ -750,6 +819,28 @@
             placeholder="Your full name"
             required
           >
+        </div>
+
+        <div class="form-group">
+          <label for="paymentScreenshot">Payment Screenshot (Optional but Recommended)</label>
+          <input 
+            type="file" 
+            id="paymentScreenshot" 
+            name="paymentScreenshot" 
+            accept="image/*"
+            style="display: none;"
+          >
+          <div class="screenshot-upload-area" id="screenshotUploadArea">
+            <i class="fas fa-camera"></i>
+            <p>Click to upload payment screenshot</p>
+            <small>Supports JPG, PNG, GIF (Max 5MB)</small>
+          </div>
+          <div class="screenshot-preview" id="screenshotPreview" style="display: none;">
+            <img id="screenshotPreviewImg" src="" alt="Payment screenshot preview">
+            <button type="button" class="remove-screenshot" id="removeScreenshot">
+              <i class="fas fa-times"></i> Remove
+            </button>
+          </div>
         </div>
 
         <button type="submit" class="submit-verification" id="submitVerification">

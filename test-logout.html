@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Logout</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin: 20px 0;
+    }
+    button {
+      background: #8B4513;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+      width: 100%;
+    }
+    button:hover { background: #6B3410; }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+    .info { color: blue; }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🔓 Logout Test</h1>
+    
+    <h3>Step 1: Login First</h3>
+    <input type="email" id="email" placeholder="Email" value="test@example.com">
+    <input type="password" id="password" placeholder="Password" value="password123">
+    <button onclick="testLogin()">Login</button>
+    
+    <h3>Step 2: Check Status</h3>
+    <button onclick="checkStatus()">Check Current User</button>
+    
+    <h3>Step 3: Logout</h3>
+    <button onclick="testLogout()">Logout</button>
+    
+    <div id="result" class="result">Ready to test...</div>
+  </div>
+
+  <script type="module">
+    import { authService } from './firebase-config.js';
+    
+    window.authService = authService;
+    
+    function showResult(message) {
+      document.getElementById('result').innerHTML = message;
+    }
+    
+    // Test Login
+    window.testLogin = async function() {
+      showResult('⏳ Logging in...');
+      
+      try {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        const user = await authService.login(email, password);
+        const userData = await authService.getUserData(user.uid);
+        
+        showResult(`<span class="success">✅ Login Successful!</span>
+
+User ID: ${user.uid}
+Email: ${user.email}
+Name: ${userData.name}
+Subscription: ${userData.subscriptionLevel}
+
+Now click "Check Current User" to verify`);
+      } catch (error) {
+        showResult(`<span class="error">❌ Login Failed</span>
+
+Error: ${error.message}
+Code: ${error.code}
+
+Make sure you registered this user first!`);
+      }
+    };
+    
+    // Check Status
+    window.checkStatus = async function() {
+      showResult('⏳ Checking status...');
+      
+      try {
+        const user = authService.getCurrentUser();
+        
+        if (user) {
+          const userData = await authService.getUserData(user.uid);
+          showResult(`<span class="success">✅ User is Logged In</span>
+
+User ID: ${user.uid}
+Email: ${user.email}
+Name: ${userData.name}
+Subscription: ${userData.subscriptionLevel}
+
+Ready to logout!`);
+        } else {
+          showResult(`<span class="info">ℹ️ No User Logged In</span>
+
+Please login first using the form above.`);
+        }
+      } catch (error) {
+        showResult(`<span class="error">❌ Error</span>
+
+${error.message}`);
+      }
+    };
+    
+    // Test Logout
+    window.testLogout = async function() {
+      showResult('⏳ Logging out...');
+      
+      try {
+        const userBefore = authService.getCurrentUser();
+        
+        if (!userBefore) {
+          showResult(`<span class="error">❌ No user to logout</span>
+
+Please login first!`);
+          return;
+        }
+        
+        console.log('User before logout:', userBefore.email);
+        
+        await authService.logout();
+        
+        console.log('Logout completed');
+        
+        // Wait a moment for auth state to update
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const userAfter = authService.getCurrentUser();
+        
+        if (userAfter) {
+          showResult(`<span class="error">❌ Logout Failed</span>
+
+User is still logged in: ${userAfter.email}
+
+This shouldn't happen. Check console for errors.`);
+        } else {
+          showResult(`<span class="success">✅ Logout Successful!</span>
+
+User signed out from Firebase
+Session cleared
+
+Click "Check Current User" to verify`);
+        }
+      } catch (error) {
+        showResult(`<span class="error">❌ Logout Error</span>
+
+Error: ${error.message}
+Code: ${error.code}
+
+Check browser console for details`);
+      }
+    };
+    
+    // Auto-check status on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        checkStatus();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
